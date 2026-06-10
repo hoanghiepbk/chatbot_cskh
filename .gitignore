@@ -1,0 +1,27 @@
+# Node
+node_modules/
+dist/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# OS / editor junk
+.DS_Store
+*.log
+
+# Local-only assistant config
+.claude/
+CLAUDE.local.md
+
+# Kept from Homeowner's edit (see TIP-001 completion report — conflicts with Blueprint §11 docs/kb)
+docs/
+CLAUDE.md

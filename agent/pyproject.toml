@@ -1,0 +1,24 @@
+[project]
+name = "xecare-agent"
+version = "0.1.0"
+description = "XeCare CSKH agent service (FastAPI + LangGraph)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "httpx",
+    "ruff",
+]
+
+[tool.ruff]
+# Default ruff config per TIP-001
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
