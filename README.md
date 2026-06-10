@@ -43,6 +43,13 @@ npm run dev
 npm run build
 ```
 
+### Database (cần Docker + [Supabase CLI](https://supabase.com/docs/guides/cli))
+
+```bash
+supabase start      # khởi động Supabase local (Postgres + pgvector + Realtime)
+supabase db reset   # áp migrations + seed (supabase/migrations, supabase/seed/seed.sql)
+```
+
 ### Evals
 
 ```bash
