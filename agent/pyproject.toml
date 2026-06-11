@@ -7,6 +7,8 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "pydantic",
+    "flagembedding>=1.4.0",
+    "supabase>=2.31.0",
 ]
 
 [dependency-groups]
