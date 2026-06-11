@@ -33,6 +33,8 @@ async def log_trace(
     payload: dict,
     latency_ms: int | None = None,
     cost_usd: float | None = None,
+    prompt_version: int | None = None,
+    policy_version: int | None = None,
 ) -> None:
     serialized = json.dumps(payload, ensure_ascii=False)
     if RAW_PHONE_RE.search(serialized) or RAW_EMAIL_RE.search(serialized):
@@ -44,5 +46,7 @@ async def log_trace(
         "payload": payload,
         "latency_ms": latency_ms,
         "cost_usd": cost_usd,
+        "prompt_version": prompt_version,
+        "policy_version": policy_version,
     }
     _get_client().table("trace_events").insert(row).execute()

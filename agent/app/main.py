@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.chat import router as chat_router
 from app.config import load_dotenv_if_present
 from app.graph import retrieval
 
@@ -29,10 +30,43 @@ async def lifespan(app: FastAPI):
     app.state.supabase = client
     # Reflects the embedding model only for now — TIP-012a extends this to PhoBERT.
     app.state.models_loaded = True
+
+    # [TIP-005] active policy + system prompt cached at startup
+    from app.graph.core import GraphDeps, build_graph
+    from app.llm import AnthropicClient
+    from app.trace import log_trace
+
+    policy_row = (
+        client.table("policy_registry").select("*").eq("active", True).execute().data[0]
+    )
+    prompt_row = (
+        client.table("prompt_registry")
+        .select("*")
+        .eq("name", "system_main")
+        .eq("active", True)
+        .execute()
+        .data[0]
+    )
+    app.state.policy = policy_row["rules"]
+    app.state.policy_version = policy_row["version"]
+    app.state.system_prompt = prompt_row["content"]
+    app.state.prompt_version = prompt_row["version"]
+
+    deps = GraphDeps(
+        llm=AnthropicClient(),
+        system_prompt=prompt_row["content"],
+        prompt_version=prompt_row["version"],
+        policy=policy_row["rules"],
+        policy_version=policy_row["version"],
+        search=retrieval.search_kb,
+        trace=log_trace,
+    )
+    app.state.chat_graph = build_graph(deps)
     yield
 
 
 app = FastAPI(title="XeCare Agent Service", lifespan=lifespan)
+app.include_router(chat_router)
 
 
 @app.get("/health")
