@@ -99,6 +99,9 @@ insert into policy_registry (name, version, rules, active) values
      true);
 
 -- ============ prompt_registry v1 ============
+-- v1 inactive: migration 0004 (TIP-005) ships system_main v2 active=true, and
+-- migrations run BEFORE seed on db reset — seeding v1 active would create two
+-- active rows.
 
 insert into prompt_registry (name, version, content, active) values
-    ('system_main', 1, 'PLACEHOLDER — TIP-005 will provide the real system prompt.', true);
+    ('system_main', 1, 'PLACEHOLDER — TIP-005 will provide the real system prompt.', false);
