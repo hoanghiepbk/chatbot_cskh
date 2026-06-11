@@ -1,7 +1,7 @@
 # XeCare CSKH Agent Platform
 
 Nền tảng agent CSKH tiếng Việt cho chuỗi dịch vụ xe giả lập XeCare (xe máy + ô tô).
-Thiết kế chi tiết: xem `docs/vibecode/BLUEPRINT-XeCare.md`.
+Thiết kế chi tiết: xem `BLUEPRINT-XeCare.md`.
 
 ## Cấu trúc monorepo
 

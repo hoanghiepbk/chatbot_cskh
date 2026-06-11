@@ -22,6 +22,6 @@ __pycache__/
 .claude/
 CLAUDE.local.md
 
-# Kept from Homeowner's edit (see TIP-001 completion report — conflicts with Blueprint §11 docs/kb)
-docs/
+# Vibecode working docs (Homeowner decision A, TIP-003)
+docs/vibecode/
 CLAUDE.md
