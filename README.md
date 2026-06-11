@@ -50,6 +50,17 @@ supabase start      # khởi động Supabase local (Postgres + pgvector + Realt
 supabase db reset   # áp migrations + seed (supabase/migrations, supabase/seed/seed.sql)
 ```
 
+### Ingest KB
+
+```bash
+cd agent
+uv run python ml/embeddings/ingest.py
+```
+
+Env cần (đặt trong `.env` ở root hoặc biến môi trường): `SUPABASE_URL`,
+`SUPABASE_SERVICE_ROLE_KEY`; tùy chọn `BGE_M3_MODEL` trỏ thư mục model bge-m3
+local (mặc định tải `BAAI/bge-m3` từ HuggingFace).
+
 ### Evals
 
 ```bash
