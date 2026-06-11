@@ -9,6 +9,8 @@ dependencies = [
     "pydantic",
     "flagembedding>=1.4.0",
     "supabase>=2.31.0",
+    "langgraph>=1.2.4",
+    "anthropic>=0.109.1",
 ]
 
 [dependency-groups]
