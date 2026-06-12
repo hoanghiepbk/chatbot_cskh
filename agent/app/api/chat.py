@@ -253,15 +253,32 @@ async def chat_confirm(conversation_id: str, body: ConfirmRequest, request: Requ
         raise HTTPException(status_code=404, detail="conversation not found")
 
     action_session = get_action_session(conversation_id)
+    trace = bind_trace(app_state, conversation_id)
     reply, executed, escalated, new_pending = await execute_pending_action(
         app_state.tools,
-        bind_trace(app_state, conversation_id),
+        trace,
         action_session["pending_action"],
         body.accept,
     )
     action_session["pending_action"] = new_pending
     if executed:
         action_session["slots"] = {}
+
+    # TIP-007: every reply passes the output guardrail — template branch here,
+    # so hard rules only (no rubric call)
+    from app.guardrails.output import run_guardrail_out
+
+    guarded = await run_guardrail_out(reply, "template", app_state.policy)
+    await trace(
+        "guardrail_out",
+        {
+            "verdict": guarded.verdict,
+            "reasons": guarded.reasons,
+            "rules_hit": guarded.rules_hit,
+            "branch": "template",
+        },
+    )
+    reply = guarded.final_text
 
     # keep the transcript complete for console/history (button click has no customer text)
     supabase.table("messages").insert(

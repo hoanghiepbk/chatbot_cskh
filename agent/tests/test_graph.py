@@ -175,6 +175,9 @@ async def test_faq_grounded_with_citations():
             '{"intent": "faq", "confidence": 0.9}',
             "Ở mốc 20.000 km cần thay dây curoa và bi nồi (giá tham khảo).",
             '{"supported": true}',
+            # TIP-007: output rubric (all clean)
+            '{"promises_outside_policy": false, "unsafe_advice": false, '
+            '"reveals_internal": false, "off_domain": false}',
         ]
     )
     deps, traces = make_deps(llm, chunks=chunks)
@@ -185,7 +188,10 @@ async def test_faq_grounded_with_citations():
     ]
     retrieval_traces = [t for t in traces if t["step_type"] == "retrieval"]
     assert retrieval_traces[0]["payload"]["chunk_ids"] == ["c1", "c2"]
-    assert len([t for t in traces if t["step_type"] == "llm_call"]) == 3
+    # router + answer + groundedness + output rubric (TIP-007)
+    assert len([t for t in traces if t["step_type"] == "llm_call"]) == 4
+    gout = next(t for t in traces if t["step_type"] == "guardrail_out")
+    assert gout["payload"]["verdict"] == "pass"
 
 
 # ---------- wiring: 8 intents reach the right node ----------

@@ -206,6 +206,9 @@ async def test_graph_booking_options_come_from_seed(supabase, tools):
                 '{"vehicle_type": "motorbike", "vehicle_ref": null, '
                 '"service": "bảo dưỡng 20.000 km", "branch_pref": null, '
                 '"time_pref": null, "target": null, "order_ref": null}',
+                # TIP-007: output rubric (clean)
+                '{"promises_outside_policy": false, "unsafe_advice": false, '
+                '"reveals_internal": false, "off_domain": false}',
             ]
         ),
         system_prompt="S", prompt_version=2, policy={"escalate_confidence_below": 0.7},

@@ -100,7 +100,7 @@ class AgentState(TypedDict, total=False):
     citations: list[dict]
     escalated: bool
     router_failed: bool
-    reply_branch: str  # set by reply nodes (TIP-007)
+    reply_branch: str  # 'faq'|'chitchat'|'action' get the output rubric; 'template' skips it
     emergency_session: dict  # {'open': bool, 'asks': int} — persisted by the API layer
 
 
@@ -226,6 +226,7 @@ def build_graph(deps: GraphDeps):
                 f"{HOTLINE} để được tư vấn trực tiếp ạ.",
                 "retrieved_chunks": [],
                 "citations": [],
+                "reply_branch": "template",
             }
 
         context = "\n\n---\n\n".join(
@@ -273,6 +274,7 @@ def build_graph(deps: GraphDeps):
                 f"Anh/chị gọi {HOTLINE} để được tư vấn chính xác nhé ạ.",
                 "retrieved_chunks": [c.id for c in chunks],
                 "citations": [],
+                "reply_branch": "template",
             }
 
         seen = set()
@@ -286,6 +288,7 @@ def build_graph(deps: GraphDeps):
             "reply": answer.text,
             "retrieved_chunks": [c.id for c in chunks],
             "citations": citations,
+            "reply_branch": "faq",
         }
 
     async def chitchat(state: AgentState) -> dict:
@@ -298,7 +301,7 @@ def build_graph(deps: GraphDeps):
             messages=history + [{"role": "user", "content": state["masked_text"]}],
             max_tokens=300,
         )
-        return {"reply": result.text}
+        return {"reply": result.text, "reply_branch": "chitchat"}
 
     async def escalate_stub(state: AgentState) -> dict:
         await trace(
@@ -325,7 +328,45 @@ def build_graph(deps: GraphDeps):
     async def out_of_scope(state: AgentState) -> dict:
         return {"reply": REPLY_OUT_OF_SCOPE}
 
-    # ---------- wiring ----------
+    # ---------- output guardrail (TIP-007) — every reply, before unmask ----------
+
+    async def guardrail_out(state: AgentState) -> dict:
+        from app.guardrails.output import run_guardrail_out
+
+        branch = state.get("reply_branch") or "template"
+
+        async def llm_trace(purpose, result):
+            await trace(
+                state,
+                "llm_call",
+                {
+                    "purpose": purpose,
+                    "model": MODEL_HAIKU,
+                    "input_tokens": result.input_tokens,
+                    "output_tokens": result.output_tokens,
+                },
+                latency_ms=result.latency_ms,
+                cost_usd=result.cost_usd,
+            )
+
+        result = await run_guardrail_out(
+            state.get("reply", ""), branch, deps.policy, llm=deps.llm, llm_trace=llm_trace
+        )
+        await trace(
+            state,
+            "guardrail_out",
+            {
+                "verdict": result.verdict,
+                "reasons": result.reasons,
+                "rules_hit": result.rules_hit,
+                "branch": branch,
+            },
+        )
+        updates: dict = {"reply": result.final_text}
+        if result.fallback:
+            await trace(state, "escalation", {"reason": "guardrail_block"})
+            updates["escalated"] = True
+        return updates
 
     def route_after_guardrail(state: AgentState) -> str:
         if state["guardrail_flags"]["emergency"]:
@@ -373,6 +414,7 @@ def build_graph(deps: GraphDeps):
     graph.add_node("action", build_action_node(deps))
     graph.add_node("complaint_stub", complaint_stub)
     graph.add_node("out_of_scope", out_of_scope)
+    graph.add_node("guardrail_out", guardrail_out)
 
     graph.set_entry_point("guardrail_in")
     graph.add_conditional_edges("guardrail_in", route_after_guardrail)
@@ -387,6 +429,7 @@ def build_graph(deps: GraphDeps):
         "complaint_stub",
         "out_of_scope",
     ]:
-        graph.add_edge(node, END)
+        graph.add_edge(node, "guardrail_out")
+    graph.add_edge("guardrail_out", END)
 
     return graph.compile()

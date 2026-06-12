@@ -348,6 +348,7 @@ def build_action_node(deps):
                 "để mình thực hiện nhé ạ.",
                 "pending_action": pending,
                 "slots": slots,
+                "reply_branch": "template",  # confirm card
             }
         pending = {
             "type": "cancel_booking",
@@ -401,7 +402,12 @@ def build_action_node(deps):
                 },
             )
             await trace(state, "escalation", {"reason": "paid_order_cancel", "order_id": order["id"]})
-            return {"reply": REPLY_PAID_ORDER, "escalated": True, "slots": slots}
+            return {
+                "reply": REPLY_PAID_ORDER,
+                "escalated": True,
+                "slots": slots,
+                "reply_branch": "template",
+            }
 
         if order["status"] != "processing":
             status = ORDER_STATUS_VI.get(order["status"], order["status"])
@@ -422,6 +428,7 @@ def build_action_node(deps):
             "để mình thực hiện nhé ạ.",
             "pending_action": pending,
             "slots": slots,
+            "reply_branch": "template",  # confirm card
         }
 
     # ---------- the node ----------
@@ -430,7 +437,11 @@ def build_action_node(deps):
         customer_id = state.get("customer_id")
         pending = state.get("pending_action")
         if pending:
-            return await continue_pending(state, pending)
+            # continuation replies are template-built (confirm card / guidance) —
+            # the output rubric skips them (TIP-007 budget)
+            result = await continue_pending(state, pending)
+            result.setdefault("reply_branch", "template")
+            return result
 
         slots = dict(state.get("slots") or {})
         extracted = await haiku_json(
@@ -453,6 +464,8 @@ def build_action_node(deps):
             result = await handle_booking(state, customer_id, slots)
         result.setdefault("slots", slots)
         result.setdefault("intent", intent)
+        # replies here interpolate extracted/DB-derived text → output rubric applies
+        result.setdefault("reply_branch", "action")
         return result
 
     return action
