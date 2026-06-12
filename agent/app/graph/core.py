@@ -73,11 +73,6 @@ REPLY_ESCALATE = (
     f"Để hỗ trợ anh/chị chính xác nhất, mình xin phép chuyển cho nhân viên tư vấn. "
     f"Anh/chị vui lòng chờ trong giây lát, hoặc gọi hotline {HOTLINE} để được hỗ trợ ngay ạ."
 )
-REPLY_ACTION_STUB = (
-    f"Dạ, mình đã ghi nhận yêu cầu của anh/chị. Tính năng đặt lịch và tra cứu/điều chỉnh "
-    f"đơn hàng tự động đang được hoàn thiện nên mình chưa thực hiện được ngay trong chat — "
-    f"anh/chị vui lòng gọi {HOTLINE} để được hỗ trợ liền ạ. Mình xin lỗi vì sự bất tiện này."
-)
 REPLY_COMPLAINT_STUB = (
     "Mình rất tiếc về trải nghiệm chưa tốt của anh/chị và chân thành xin lỗi. Mình đã ghi "
     "nhận phản ánh và sẽ chuyển ngay cho bộ phận phụ trách xem xét; XeCare sẽ liên hệ lại "
@@ -103,6 +98,7 @@ class AgentState(TypedDict, total=False):
     mode: str
     # plumbing required to execute a turn (not part of the conceptual contract)
     conversation_id: str
+    customer_id: str  # profile UUID — tools check ownership against it
     raw_text: str
     masked_text: str
     pii_session: PIISession
@@ -121,6 +117,7 @@ class GraphDeps:
     policy_version: int
     search: Callable[..., Awaitable[list]]  # search_kb-compatible
     trace: Callable[..., Awaitable[None]]  # log_trace-compatible
+    tools: Any = None  # ToolKit (TIP-006) — fakes/spies in tests
     extra: dict = field(default_factory=dict)
 
 
@@ -331,9 +328,6 @@ def build_graph(deps: GraphDeps):
         )
         return {"reply": REPLY_INJECTION, "escalated": False}
 
-    async def action_stub(state: AgentState) -> dict:
-        return {"reply": REPLY_ACTION_STUB}
-
     async def complaint_stub(state: AgentState) -> dict:
         return {"reply": REPLY_COMPLAINT_STUB}
 
@@ -347,6 +341,10 @@ def build_graph(deps: GraphDeps):
             return "emergency_stub"
         if state["guardrail_flags"]["injection_score"] >= INJECTION_THRESHOLD:
             return "injection_refuse"
+        # TIP-006: an in-flight action (choosing a slot / awaiting confirm) continues
+        # in the action node — router would misread bare replies like "2"
+        if state.get("pending_action"):
+            return "action"
         return "router"
 
     def route_after_router(state: AgentState) -> str:
@@ -359,12 +357,15 @@ def build_graph(deps: GraphDeps):
         return {
             "faq": "faq",
             "chitchat": "chitchat",
-            "booking": "action_stub",
-            "order_lookup": "action_stub",
-            "modify_booking": "action_stub",
+            "booking": "action",
+            "order_lookup": "action",
+            "modify_booking": "action",
             "complaint": "complaint_stub",
             "out_of_scope": "out_of_scope",
         }[state["intent"]]
+
+    # deferred import: action.py imports constants from this module
+    from app.graph.action import build_action_node
 
     graph = StateGraph(AgentState)
     graph.add_node("guardrail_in", guardrail_in)
@@ -374,7 +375,7 @@ def build_graph(deps: GraphDeps):
     graph.add_node("emergency_stub", emergency_stub)
     graph.add_node("escalate_stub", escalate_stub)
     graph.add_node("injection_refuse", injection_refuse)
-    graph.add_node("action_stub", action_stub)
+    graph.add_node("action", build_action_node(deps))
     graph.add_node("complaint_stub", complaint_stub)
     graph.add_node("out_of_scope", out_of_scope)
 
@@ -387,7 +388,7 @@ def build_graph(deps: GraphDeps):
         "emergency_stub",
         "escalate_stub",
         "injection_refuse",
-        "action_stub",
+        "action",
         "complaint_stub",
         "out_of_scope",
     ]:

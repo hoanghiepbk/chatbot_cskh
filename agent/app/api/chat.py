@@ -13,6 +13,7 @@ import time
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
+from app.graph.action import execute_pending_action, public_pending
 from app.guardrails.pii import PIISession, normalize_phone
 
 router = APIRouter()
@@ -22,6 +23,10 @@ router = APIRouter()
 # TODO: move to Redis for multi-worker / restart-safe sessions.
 SESSION_TTL_SECONDS = 24 * 3600
 _pii_sessions: dict[str, tuple[PIISession, float]] = {}
+
+# TIP-006: multi-turn action state (slots + pending_action), same in-memory TTL
+# pattern as PIISession — TIP-008 moves both to Redis in one go.
+_action_sessions: dict[str, tuple[dict, float]] = {}
 
 
 def get_pii_session(conversation_id: str) -> PIISession:
@@ -37,12 +42,44 @@ def register_pii_session(conversation_id: str, session: PIISession) -> None:
     _pii_sessions[conversation_id] = (session, time.time())
 
 
+def get_action_session(conversation_id: str) -> dict:
+    now = time.time()
+    for key in [
+        k for k, (_, ts) in _action_sessions.items() if now - ts > SESSION_TTL_SECONDS
+    ]:
+        del _action_sessions[key]
+    if conversation_id not in _action_sessions:
+        _action_sessions[conversation_id] = ({"slots": {}, "pending_action": None}, now)
+    return _action_sessions[conversation_id][0]
+
+
+def bind_trace(app_state, conversation_id: str):
+    """Conversation-bound trace for tool calls outside the graph (/confirm)."""
+    from app.trace import log_trace
+
+    async def trace(step_type: str, payload: dict, latency_ms: int | None = None):
+        await log_trace(
+            conversation_id,
+            step_type,
+            payload,
+            latency_ms=latency_ms,
+            prompt_version=app_state.prompt_version,
+            policy_version=app_state.policy_version,
+        )
+
+    return trace
+
+
 class StartRequest(BaseModel):
     phone: str
 
 
 class MessageRequest(BaseModel):
     text: str
+
+
+class ConfirmRequest(BaseModel):
+    accept: bool
 
 
 def phone_hash(phone: str) -> str:
@@ -127,9 +164,11 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
     ]
 
     pii_session = get_pii_session(conversation_id)
+    action_session = get_action_session(conversation_id)
 
     state = {
         "conversation_id": conversation_id,
+        "customer_id": customer_id,
         "customer_profile": {
             "vehicles": profile.get("vehicles", []),
             "facts": profile.get("facts", {}),
@@ -138,10 +177,14 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
         "raw_text": body.text,
         "pii_session": pii_session,
         "mode": conv.data[0]["mode"],
-        "slots": {},
+        "slots": action_session["slots"],
+        "pending_action": action_session["pending_action"],
         "guardrail_flags": {},
     }
     final = await app_state.chat_graph.ainvoke(state)
+
+    action_session["slots"] = final.get("slots") or {}
+    action_session["pending_action"] = final.get("pending_action")
 
     reply_masked = final.get("reply", "")
     reply = pii_session.unmask(reply_masked)
@@ -169,4 +212,47 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
         "citations": final.get("citations", []),
         "intent": final.get("intent"),
         "escalated": bool(final.get("escalated")),
+        # summary-only view for the widget confirm card — no internal ids
+        "pending_action": public_pending(final.get("pending_action")),
+    }
+
+
+@router.post("/chat/{conversation_id}/confirm")
+async def chat_confirm(conversation_id: str, body: ConfirmRequest, request: Request):
+    """The ONLY path that may execute a write tool (Blueprint §6.3 confirm gate)."""
+    app_state = request.app.state
+    supabase = app_state.supabase
+
+    conv = (
+        supabase.table("conversations").select("id").eq("id", conversation_id).execute()
+    )
+    if not conv.data:
+        raise HTTPException(status_code=404, detail="conversation not found")
+
+    action_session = get_action_session(conversation_id)
+    reply, executed, escalated, new_pending = await execute_pending_action(
+        app_state.tools,
+        bind_trace(app_state, conversation_id),
+        action_session["pending_action"],
+        body.accept,
+    )
+    action_session["pending_action"] = new_pending
+    if executed:
+        action_session["slots"] = {}
+
+    # keep the transcript complete for console/history (button click has no customer text)
+    supabase.table("messages").insert(
+        {
+            "conversation_id": conversation_id,
+            "sender": "agent",
+            "content": reply,
+            "content_masked": reply,
+        }
+    ).execute()
+
+    return {
+        "reply": reply,
+        "executed": executed,
+        "escalated": escalated,
+        "pending_action": public_pending(new_pending),
     }

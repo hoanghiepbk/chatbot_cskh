@@ -3,7 +3,6 @@
 import pytest
 
 from app.graph.core import (
-    REPLY_ACTION_STUB,
     REPLY_COMPLAINT_STUB,
     REPLY_EMERGENCY,
     REPLY_ESCALATE,
@@ -194,9 +193,8 @@ async def test_faq_grounded_with_citations():
 @pytest.mark.parametrize(
     "intent,expected_reply",
     [
-        ("booking", REPLY_ACTION_STUB),
-        ("order_lookup", REPLY_ACTION_STUB),
-        ("modify_booking", REPLY_ACTION_STUB),
+        # booking/order_lookup/modify_booking now reach the real action node —
+        # covered in test_action.py (TIP-006)
         ("complaint", REPLY_COMPLAINT_STUB),
         ("out_of_scope", REPLY_OUT_OF_SCOPE),
         ("emergency", REPLY_EMERGENCY),

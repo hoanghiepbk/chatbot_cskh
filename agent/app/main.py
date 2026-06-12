@@ -34,6 +34,7 @@ async def lifespan(app: FastAPI):
     # [TIP-005] active policy + system prompt cached at startup
     from app.graph.core import GraphDeps, build_graph
     from app.llm import AnthropicClient
+    from app.tools import build_tools
     from app.trace import log_trace
 
     policy_row = (
@@ -52,6 +53,9 @@ async def lifespan(app: FastAPI):
     app.state.system_prompt = prompt_row["content"]
     app.state.prompt_version = prompt_row["version"]
 
+    tools = build_tools(client)
+    app.state.tools = tools
+
     deps = GraphDeps(
         llm=AnthropicClient(),
         system_prompt=prompt_row["content"],
@@ -60,6 +64,7 @@ async def lifespan(app: FastAPI):
         policy_version=policy_row["version"],
         search=retrieval.search_kb,
         trace=log_trace,
+        tools=tools,
     )
     app.state.chat_graph = build_graph(deps)
     yield
