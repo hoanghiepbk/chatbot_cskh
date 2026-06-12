@@ -13,15 +13,18 @@ insert into branches (id, name, address, district, open_hours) values
      '78 Quang Trung', 'Hà Đông',
      '{"mon_sat":"08:00-18:00","sun":"08:00-12:00"}');
 
--- ============ service_slots (7 days × 3 branches × 6 slots = 126) ============
--- Motorbike slots: 08:00, 10:00, 14:00, 16:00. Car slots: 09:00, 15:00.
+-- ============ service_slots (7 days × 3 branches, VN business hours) ============
+-- TIP-007 chore: slot times are VN wall-clock (KB-07: 08:00–18:00 +07; Sunday is
+-- morning-only, so afternoon slots are skipped that day) — widgets display
+-- naturally. Motorbike: 08:00, 10:00, 14:00, 16:00. Car: 09:00, 15:00.
 -- Every 5th slot is pre-filled (booked = capacity) so the "suggest nearest free
--- slot" flow has real data to filter — 25/126 ≈ 20%.
+-- slot" flow has real data to filter (~20%).
 
 with slot_grid as (
     select
         b.id as branch_id,
-        (current_date + d.day_offset)::timestamptz + s.slot_time as starts_at,
+        ((current_date + d.day_offset)::timestamp + s.slot_time)
+            at time zone 'Asia/Ho_Chi_Minh' as starts_at,
         s.vehicle_type,
         row_number() over (order by d.day_offset, b.id, s.slot_time) as rn
     from branches b
@@ -34,6 +37,8 @@ with slot_grid as (
         (interval '9 hours',  'car'),
         (interval '15 hours', 'car')
     ) as s(slot_time, vehicle_type)
+    where extract(dow from current_date + d.day_offset) <> 0
+       or s.slot_time < interval '12 hours'
 )
 insert into service_slots (branch_id, starts_at, vehicle_type, capacity, booked)
 select branch_id, starts_at, vehicle_type, 1,
