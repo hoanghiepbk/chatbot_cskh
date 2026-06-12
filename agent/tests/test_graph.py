@@ -100,13 +100,15 @@ def test_extract_json_tolerates_surrounding_prose():
 # ---------- router parse failure ----------
 
 @pytest.mark.anyio
-async def test_router_broken_json_retry_then_out_of_scope():
+async def test_router_broken_json_retry_then_escalate():
     llm = FakeLLM(["not json at all", "{ broken"])
     deps, traces = make_deps(llm)
     final = await run(build_graph(deps), base_state("hỏi linh tinh gì đó"))
     assert final["intent"] == "out_of_scope"
     assert final["confidence"] == 0.0
-    assert final["reply"] == REPLY_OUT_OF_SCOPE
+    # TIP-006 chore: parse failure escalates to a human instead of out_of_scope
+    assert final["reply"] == REPLY_ESCALATE
+    assert final["escalated"] is True
     assert len(llm.calls) == 2  # original + 1 retry, no more
     router_traces = [t for t in traces if t["step_type"] == "router"]
     assert router_traces[0]["payload"]["intent"] == "out_of_scope"

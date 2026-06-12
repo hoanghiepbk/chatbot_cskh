@@ -351,7 +351,7 @@ def build_graph(deps: GraphDeps):
 
     def route_after_router(state: AgentState) -> str:
         if state.get("router_failed"):
-            return "out_of_scope"  # deterministic refusal — confidence gate not applicable
+            return "escalate_stub"  # TIP-006 chore: parse failure goes to a human
         if state["intent"] == "emergency":
             return "emergency_stub"
         if state["confidence"] < threshold:
