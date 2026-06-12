@@ -25,8 +25,11 @@ SESSION_TTL_SECONDS = 24 * 3600
 _pii_sessions: dict[str, tuple[PIISession, float]] = {}
 
 # TIP-006: multi-turn action state (slots + pending_action), same in-memory TTL
-# pattern as PIISession — TIP-008 moves both to Redis in one go.
+# pattern as PIISession — TIP-008 persists these in a conversations jsonb column.
 _action_sessions: dict[str, tuple[dict, float]] = {}
+
+# TIP-007: open-emergency state machine ({'open': bool, 'asks': int})
+_emergency_sessions: dict[str, tuple[dict, float]] = {}
 
 
 def get_pii_session(conversation_id: str) -> PIISession:
@@ -51,6 +54,21 @@ def get_action_session(conversation_id: str) -> dict:
     if conversation_id not in _action_sessions:
         _action_sessions[conversation_id] = ({"slots": {}, "pending_action": None}, now)
     return _action_sessions[conversation_id][0]
+
+
+def get_emergency_session(conversation_id: str) -> dict:
+    now = time.time()
+    for key in [
+        k for k, (_, ts) in _emergency_sessions.items() if now - ts > SESSION_TTL_SECONDS
+    ]:
+        del _emergency_sessions[key]
+    if conversation_id not in _emergency_sessions:
+        _emergency_sessions[conversation_id] = ({"open": False, "asks": 0}, now)
+    return _emergency_sessions[conversation_id][0]
+
+
+def set_emergency_session(conversation_id: str, session: dict) -> None:
+    _emergency_sessions[conversation_id] = (session, time.time())
 
 
 def bind_trace(app_state, conversation_id: str):
@@ -165,6 +183,7 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
 
     pii_session = get_pii_session(conversation_id)
     action_session = get_action_session(conversation_id)
+    emergency_session = get_emergency_session(conversation_id)
 
     state = {
         "conversation_id": conversation_id,
@@ -179,12 +198,16 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
         "mode": conv.data[0]["mode"],
         "slots": action_session["slots"],
         "pending_action": action_session["pending_action"],
+        "emergency_session": emergency_session,
         "guardrail_flags": {},
     }
     final = await app_state.chat_graph.ainvoke(state)
 
     action_session["slots"] = final.get("slots") or {}
     action_session["pending_action"] = final.get("pending_action")
+    set_emergency_session(
+        conversation_id, final.get("emergency_session") or {"open": False, "asks": 0}
+    )
 
     reply_masked = final.get("reply", "")
     reply = pii_session.unmask(reply_masked)

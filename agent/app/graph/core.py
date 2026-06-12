@@ -59,12 +59,6 @@ GROUNDEDNESS_SYSTEM = """Bạn là bộ kiểm tra groundedness. Cho câu hỏi,
 và câu trả lời. Kiểm tra: mọi khẳng định trong câu trả lời có được các trích đoạn hỗ trợ không?
 Trả về DUY NHẤT JSON: {"supported": true} hoặc {"supported": false}"""
 
-REPLY_EMERGENCY = (
-    f"Anh/chị ơi, an toàn là quan trọng nhất lúc này: nếu đang trên đường, hãy bật đèn "
-    f"cảnh báo, di chuyển người ra khỏi lòng đường nếu có thể và đứng ở vị trí an toàn. "
-    f"Anh/chị gọi ngay hotline cứu hộ 24/7 của XeCare: {HOTLINE} để được điều phối hỗ trợ "
-    f"ngay lập tức ạ."
-)
 REPLY_INJECTION = (
     "Xin lỗi anh/chị, mình không thể hỗ trợ yêu cầu này. XeCare có thể giúp anh/chị về "
     "bảo dưỡng, đặt lịch, tra cứu đơn hàng hoặc cứu hộ — anh/chị cần hỗ trợ gì ạ?"
@@ -106,6 +100,8 @@ class AgentState(TypedDict, total=False):
     citations: list[dict]
     escalated: bool
     router_failed: bool
+    reply_branch: str  # set by reply nodes (TIP-007)
+    emergency_session: dict  # {'open': bool, 'asks': int} — persisted by the API layer
 
 
 @dataclass
@@ -304,11 +300,6 @@ def build_graph(deps: GraphDeps):
         )
         return {"reply": result.text}
 
-    async def emergency_stub(state: AgentState) -> dict:
-        # TIP-007 creates the real ticket; v1 replies safety-first + hotline only
-        await trace(state, "escalation", {"reason": "emergency"})
-        return {"reply": REPLY_EMERGENCY, "escalated": True, "intent": "emergency"}
-
     async def escalate_stub(state: AgentState) -> dict:
         await trace(
             state,
@@ -338,7 +329,10 @@ def build_graph(deps: GraphDeps):
 
     def route_after_guardrail(state: AgentState) -> str:
         if state["guardrail_flags"]["emergency"]:
-            return "emergency_stub"
+            return "emergency"
+        # TIP-007: an open emergency outranks everything — the customer is mid-rescue
+        if (state.get("emergency_session") or {}).get("open"):
+            return "emergency"
         if state["guardrail_flags"]["injection_score"] >= INJECTION_THRESHOLD:
             return "injection_refuse"
         # TIP-006: an in-flight action (choosing a slot / awaiting confirm) continues
@@ -351,7 +345,7 @@ def build_graph(deps: GraphDeps):
         if state.get("router_failed"):
             return "escalate_stub"  # TIP-006 chore: parse failure goes to a human
         if state["intent"] == "emergency":
-            return "emergency_stub"
+            return "emergency"
         if state["confidence"] < threshold:
             return "escalate_stub"
         return {
@@ -364,15 +358,16 @@ def build_graph(deps: GraphDeps):
             "out_of_scope": "out_of_scope",
         }[state["intent"]]
 
-    # deferred import: action.py imports constants from this module
+    # deferred imports: these modules import constants from this module
     from app.graph.action import build_action_node
+    from app.graph.emergency import build_emergency_node
 
     graph = StateGraph(AgentState)
     graph.add_node("guardrail_in", guardrail_in)
     graph.add_node("router", router)
     graph.add_node("faq", faq)
     graph.add_node("chitchat", chitchat)
-    graph.add_node("emergency_stub", emergency_stub)
+    graph.add_node("emergency", build_emergency_node(deps))
     graph.add_node("escalate_stub", escalate_stub)
     graph.add_node("injection_refuse", injection_refuse)
     graph.add_node("action", build_action_node(deps))
@@ -385,7 +380,7 @@ def build_graph(deps: GraphDeps):
     for node in [
         "faq",
         "chitchat",
-        "emergency_stub",
+        "emergency",
         "escalate_stub",
         "injection_refuse",
         "action",

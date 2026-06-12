@@ -4,7 +4,6 @@ import pytest
 
 from app.graph.core import (
     REPLY_COMPLAINT_STUB,
-    REPLY_EMERGENCY,
     REPLY_ESCALATE,
     REPLY_INJECTION,
     REPLY_NOT_FOUND_PREFIX,
@@ -12,6 +11,7 @@ from app.graph.core import (
     GraphDeps,
     build_graph,
 )
+from app.graph.emergency import REPLY_EMERGENCY_STEP1
 from app.guardrails.pii import PIISession
 from app.llm import LLMResult
 
@@ -197,7 +197,7 @@ async def test_faq_grounded_with_citations():
         # covered in test_action.py (TIP-006)
         ("complaint", REPLY_COMPLAINT_STUB),
         ("out_of_scope", REPLY_OUT_OF_SCOPE),
-        ("emergency", REPLY_EMERGENCY),
+        ("emergency", REPLY_EMERGENCY_STEP1),
     ],
 )
 @pytest.mark.anyio
@@ -234,7 +234,7 @@ async def test_pre_gate_emergency_no_router():
     llm = FakeLLM([])
     deps, traces = make_deps(llm)
     final = await run(build_graph(deps), base_state("toi bi tai nan tren cao toc"))
-    assert final["reply"] == REPLY_EMERGENCY
+    assert final["reply"] == REPLY_EMERGENCY_STEP1
     assert final["escalated"] is True
     assert len(llm.calls) == 0
     esc = next(t for t in traces if t["step_type"] == "escalation")

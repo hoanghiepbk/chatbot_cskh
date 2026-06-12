@@ -31,6 +31,8 @@ class ToolKit:
     book_slot: Callable[..., Awaitable[dict]]
     cancel_booking: Callable[..., Awaitable[dict]]
     cancel_parts_order: Callable[..., Awaitable[dict]]
+    # write — SOLE confirm-gate exception, see create_rescue_ticket (TIP-007)
+    create_rescue_ticket: Callable[..., Awaitable[dict]] | None = None
 
 
 WRITE_TOOLS = {"book_slot", "cancel_booking", "cancel_parts_order"}
@@ -166,6 +168,39 @@ def build_tools(supabase: Any) -> ToolKit:
         )
         return updated.data[0]
 
+    # EXCEPTION (RRI/REQ-01, TIP-007): rescue tickets are written WITHOUT the
+    # confirm gate. An emergency is information intake for the dispatcher, not a
+    # financial action — speed beats ceremony, and a missing confirm could leave
+    # a stranded customer with no callback. Do NOT extend this precedent to any
+    # other write tool.
+    async def create_rescue_ticket(
+        conversation_id: str | None,
+        location: str,
+        callback_placeholder: str,
+        vehicle: dict | None,
+        note: str,
+    ) -> dict:
+        ticket = (
+            supabase.table("tickets")
+            .insert(
+                {
+                    "type": "rescue",
+                    "priority": "urgent",
+                    "status": "open",
+                    "conversation_id": conversation_id,
+                    "payload": {
+                        "location": location,
+                        "callback_placeholder": callback_placeholder,
+                        "vehicle": vehicle,
+                        "note": note,
+                        "conversation_id": conversation_id,
+                    },
+                }
+            )
+            .execute()
+        )
+        return ticket.data[0]
+
     return ToolKit(
         get_customer_orders=get_customer_orders,
         find_free_slots=find_free_slots,
@@ -173,4 +208,5 @@ def build_tools(supabase: Any) -> ToolKit:
         book_slot=book_slot,
         cancel_booking=cancel_booking,
         cancel_parts_order=cancel_parts_order,
+        create_rescue_ticket=create_rescue_ticket,
     )

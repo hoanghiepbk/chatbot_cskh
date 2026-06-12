@@ -146,6 +146,27 @@ async def test_cancel_other_customers_order_not_found(supabase, tools):
 
 
 @pytest.mark.anyio
+async def test_create_rescue_ticket_real_row(supabase, tools):
+    ticket = await tools.create_rescue_ticket(
+        conversation_id=None,
+        location="đại lộ Thăng Long gần cầu vượt",
+        callback_placeholder="[PHONE_KH]",
+        vehicle={"type": "motorbike", "model": "Honda Winner X"},
+        note="toi bi tai nan, goi lai [PHONE_KH]",
+    )
+    try:
+        row = (
+            supabase.table("tickets").select("*").eq("id", ticket["id"]).execute()
+        ).data[0]
+        assert row["type"] == "rescue"
+        assert row["priority"] == "urgent"
+        assert row["status"] == "open"
+        assert row["payload"]["callback_placeholder"] == "[PHONE_KH]"
+    finally:
+        supabase.table("tickets").delete().eq("id", ticket["id"]).execute()
+
+
+@pytest.mark.anyio
 async def test_find_free_slots_from_seed(tools):
     slots = await tools.find_free_slots("motorbike")
     assert len(slots) == 3
