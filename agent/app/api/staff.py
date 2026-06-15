@@ -12,12 +12,7 @@ import os
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
 
-from app.api.chat import (
-    bind_trace,
-    get_pii_session,
-    peek_pii_session,
-    set_handback_note,
-)
+from app.api.chat import bind_trace
 from app.llm import MODEL_HAIKU
 
 router = APIRouter(prefix="/staff")
@@ -107,13 +102,16 @@ async def staff_message(conversation_id: str, body: StaffMessage, request: Reque
         raise HTTPException(status_code=409, detail="conversation is not in human mode")
 
     # staff may type a phone number — the public (masked) version must still mask it
-    pii_session = get_pii_session(conversation_id)
+    session_store = request.app.state.session_store
+    session = await session_store.load(conversation_id)
+    masked = session.pii.mask(body.text)
+    await session_store.save(conversation_id, session)  # mask may add a placeholder
     supabase.table("messages").insert(
         {
             "conversation_id": conversation_id,
             "sender": "staff",
             "content": body.text,
-            "content_masked": pii_session.mask(body.text),
+            "content_masked": masked,
         }
     ).execute()
     return {"ok": True}
@@ -175,7 +173,10 @@ async def staff_resolve(ticket_id: str, request: Request):
                 },
                 latency_ms=result.latency_ms,
             )
-        set_handback_note(conversation_id, note)
+        session_store = app_state.session_store
+        session = await session_store.load(conversation_id)
+        session.hitl = {**session.hitl, "handback_note": note}
+        await session_store.save(conversation_id, session)
         supabase.table("messages").insert(
             {
                 "conversation_id": conversation_id,
@@ -206,16 +207,16 @@ async def staff_reveal_contact(ticket_id: str, request: Request):
     if not conversation_id:
         raise HTTPException(status_code=404, detail="ticket has no conversation")
 
-    session = peek_pii_session(conversation_id)
-    if session is None:
-        # in-memory session expired — persistence is TIP-008b (documented)
-        raise HTTPException(
-            status_code=410,
-            detail="contact map expired for this conversation (session persistence is TIP-008b)",
-        )
-
+    # TIP-008b: session is persisted in DB now (survives restart). A closed
+    # conversation has its PII map wiped → no value to reveal → 404.
+    session = await app_state.session_store.load(conversation_id)
     placeholder = (ticket.get("payload") or {}).get("callback_placeholder") or "[PHONE_KH]"
-    value = session.unmask(placeholder)
+    value = session.pii.unmask(placeholder)
+    if value == placeholder:
+        raise HTTPException(
+            status_code=404,
+            detail="no contact on record for this conversation (closed or never captured)",
+        )
     await bind_trace(app_state, conversation_id)(
         "escalation", {"step": "pii_reveal", "ticket_id": ticket_id}
     )

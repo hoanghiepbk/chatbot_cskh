@@ -59,6 +59,10 @@ async def lifespan(app: FastAPI):
     llm = AnthropicClient()
     app.state.llm = llm  # [TIP-008] staff API reuses it for resolve summaries
 
+    from app.session import SessionStore
+
+    app.state.session_store = SessionStore(client)  # [TIP-008b] persistent sessions
+
     deps = GraphDeps(
         llm=llm,
         system_prompt=prompt_row["content"],

@@ -12,12 +12,12 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-import app.api.chat as chat_mod
 import app.graph.escalate as escalate_mod
 from app.api.chat import router as chat_router
 from app.api.staff import router as staff_router
 from app.graph.core import GraphDeps, build_graph
 from app.llm import LLMResult
+from app.session import SessionStore
 from app.tools import build_tools
 from app.trace import log_trace
 from tests.conftest import requires_db
@@ -49,6 +49,9 @@ class SmartLLM:
                     '"reveals_internal": false, "off_domain": false}')
         elif "Khách đang phàn nàn" in system:  # complaint resolve
             text = "Dạ mình rất xin lỗi anh/chị về trải nghiệm chưa tốt ạ."
+        elif "cập nhật hồ sơ khách" in system:  # close facts
+            text = json.dumps({"facts": {"note": "đã hỗ trợ"}, "last_km": 21000,
+                               "last_summary": "Khách khiếu nại xe kêu, đã chuyển nhân viên."})
         else:  # chitchat / fallback
             text = "Dạ vâng, mình luôn sẵn sàng hỗ trợ anh/chị ạ!"
         return LLMResult(text=text, input_tokens=10, output_tokens=5, cost_usd=0.0, latency_ms=1)
@@ -58,11 +61,6 @@ class SmartLLM:
 def hitl_app(supabase, monkeypatch):
     monkeypatch.setenv("STAFF_API_TOKEN", STAFF_TOKEN)
     monkeypatch.setattr(escalate_mod, "is_business_hours", lambda *a: True)
-    # isolate in-memory session dicts per test
-    chat_mod._pii_sessions.clear()
-    chat_mod._action_sessions.clear()
-    chat_mod._emergency_sessions.clear()
-    chat_mod._hitl_sessions.clear()
 
     llm = SmartLLM()
 
@@ -80,6 +78,7 @@ def hitl_app(supabase, monkeypatch):
     app.state.prompt_version = 2
     app.state.policy_version = 2
     app.state.tools = build_tools(supabase)
+    app.state.session_store = SessionStore(supabase)
     app.state.chat_graph = build_graph(deps)
     app.include_router(chat_router)
     app.include_router(staff_router)
@@ -219,7 +218,7 @@ def test_reveal_contact_and_audit(hitl_app):
         cleanup(supabase, cid)
 
 
-def test_reveal_expired_session_410(hitl_app):
+def test_reveal_survives_restart_then_404_after_close(hitl_app):
     client, llm, supabase = hitl_app
     cid = client.post("/chat/start", json={"phone": "+84901000003"}).json()["conversation_id"]
     rescue = (
@@ -229,9 +228,15 @@ def test_reveal_expired_session_410(hitl_app):
         }).execute().data[0]
     )
     try:
-        chat_mod._pii_sessions.clear()  # simulate TTL expiry
+        # simulate a RESTART: brand-new store with an empty cache → must load from DB
+        client.app.state.session_store = SessionStore(supabase)
+        body = client.post(f"/staff/tickets/{rescue['id']}/reveal_contact", headers=auth()).json()
+        assert body["value"] == "+84901000003"  # persisted, not lost on restart
+
+        # close wipes the PII map → reveal now 404
+        assert client.post(f"/chat/{cid}/close", json={}).json()["ok"] is True
         r = client.post(f"/staff/tickets/{rescue['id']}/reveal_contact", headers=auth())
-        assert r.status_code == 410
+        assert r.status_code == 404
     finally:
         cleanup(supabase, cid)
 
