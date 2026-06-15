@@ -50,12 +50,12 @@ Nền tảng agent CSKH tiếng Việt cho chuỗi dịch vụ xe giả lập **
 | Agent service | Python 3.12 · FastAPI · LangGraph | Ecosystem eval mạnh nhất, user đã thành thạo LangGraph |
 | LLM | Claude Sonnet (agent chính) · Haiku (groundedness, output policy, LLM-as-judge) | Phân tier theo chi phí |
 | Router/Guardrail local | PhoBERT-base multi-task (ONNX, CPU) | ~20ms, 0đ/request, deterministic |
-| Embedding | bge-m3 (ONNX, CPU) | Dense + sparse một lần encode → hybrid search không cần BM25 tiếng Việt trên Postgres |
+| Embedding | bge-m3 (PyTorch CPU; ONNX hoãn) | Dense + sparse một lần encode → hybrid search không cần BM25 tiếng Việt trên Postgres. [TIP-010.5] chạy PyTorch CPU đo RAM đủ thấp → nợ ONNX bge-m3 KHÔNG cần cho RAM (xem dòng Deploy) |
 | Data | Supabase: Postgres + pgvector + Realtime + RLS | User đã thành thạo (BusOps, PhoChain) |
 | Console | Refine.dev + Ant Design + Recharts | Khớp niche Admin Dashboard của user |
 | Widget chat | React + Vite (nhúng được iframe) | Đơn giản, subscribe Realtime |
 | CI | GitHub Actions: smoke eval mỗi PR (~25 case), full eval nightly | Kiểm soát chi phí token |
-| Deploy | Vercel (console + widget) · Railway hobby (agent, cần ~2GB RAM cho ONNX) | Free tier KHÔNG đủ RAM — dùng hobby plan |
+| Deploy | Vercel (console + widget) · Railway (agent, PyTorch CPU) | [TIP-010.5] RAM ĐO THẬT cục bộ (bge-m3 PyTorch float32): WorkingSet ~1.3GB steady / peak ~1.99GB (Windows); model 2.19GB trên đĩa → ước tính RSS Linux container ~2.5–3.0GB. **Kết luận:** nếu plan Railway ≥8GB (Hobby hiện tại) → GIỮ PyTorch, **đóng nợ ONNX bge-m3** (dư địa lớn). Cần xác nhận giới hạn plan + 1 lần đo RAM trên Railway sau deploy để chốt cuối. PhoBERT (TIP-012a) vẫn dùng ONNX int8 theo kế hoạch riêng |
 | Benchmark phụ | Qwen2.5-0.5B QLoRA (train trên Colab T4 free) | Cột so sánh trung thực, 1 config duy nhất |
 
 ---
