@@ -25,3 +25,7 @@ CLAUDE.local.md
 # Vibecode working docs (Homeowner decision A, TIP-003)
 docs/vibecode/
 CLAUDE.md
+
+# Eval run outputs (generated; TIP-009)
+evals/*_report.json
+.evalvenv/
