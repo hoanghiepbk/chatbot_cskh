@@ -1,0 +1,24 @@
+[
+  {"id": "q-fp-dangky-cuuho", "turns": [{"user": "em muốn đăng ký gói cứu hộ thường niên thì làm sao?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: đăng ký gói cứu hộ → KHÔNG khẩn cấp (golden fail)"},
+  {"id": "q-fp-phi-cuuho", "turns": [{"user": "cho mình hỏi phí dịch vụ cứu hộ xe máy bao nhiêu?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: hỏi phí cứu hộ → faq"},
+  {"id": "q-fp-quytrinh-cuuho", "turns": [{"user": "quy trình cứu hộ của bên mình diễn ra thế nào?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: hỏi quy trình cứu hộ → faq"},
+  {"id": "q-fp-cuuho-tuansau", "turns": [{"user": "đặt lịch dùng dịch vụ cứu hộ cho tuần sau được không?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: cứu hộ tương lai (không gấp) → không khẩn cấp"},
+  {"id": "q-fp-phanh-keu-ditiep", "turns": [{"user": "phanh xe em kêu rít, đi tiếp được không?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: phanh kêu + đi tiếp → tư vấn an toàn, không nhất thiết escalate (golden fail)"},
+  {"id": "q-fp-tieng-keu-la", "turns": [{"user": "xe có tiếng kêu lạ ở máy, có sao không nhỉ?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: tiếng kêu lạ → faq/tư vấn, không khẩn cấp"},
+  {"id": "q-fp-baohiem-tainan", "turns": [{"user": "bên mình có bán bảo hiểm tai nạn cho xe không?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: 'tai nạn' trong 'bảo hiểm tai nạn' kích pre_gate nhầm → đo over-trigger"},
+  {"id": "q-fp-hoi-matphanh-kb", "turns": [{"user": "dấu hiệu nhận biết sắp mất phanh là gì để mình phòng tránh?"}],
+   "expect": {"escalated": false}, "note": "nhóm B FP: hỏi KIẾN THỨC về mất phanh (không phải đang mất phanh) → faq"},
+  {"id": "q-emergency-continuity",
+   "turns": [
+     {"user": "xe tôi vừa bị tai nạn, cần cứu hộ gấp"},
+     {"user": "bao lâu thì xe cứu hộ tới nơi vậy?"}],
+   "expect": {"escalated": true},
+   "note": "FALSE-NEGATIVE (đo, không gate): hỏi ETA giữa lúc cứu hộ — emergency phải GIỮ mở, không bị Haiku đọc nhầm thành 'không cần cứu hộ' rồi dismiss"}
+]

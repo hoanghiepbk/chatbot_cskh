@@ -22,21 +22,24 @@ class Turn:
 @dataclass
 class EvalCase:
     id: str
-    suite: str  # 'golden' | 'ragas'
-    severity: str  # 'quality' (golden); 'critical' arrives in TIP-010
+    suite: str  # 'golden' | 'ragas' | 'adversarial_critical' | 'adversarial_quality'
+    severity: str  # 'quality' | 'critical' (critical gates the run — TIP-010)
     turns: list[Turn]
     expect: dict = field(default_factory=dict)  # checked at the last turn
     judge: str | None = None  # optional llm_judge criterion
-    note: str = ""  # provenance: which issue / REQ this case traces to
-    group: str = ""  # file stem (router/faq/action/...) for breakdown
+    note: str = ""  # provenance: which rule / OWASP LLM / issue this case traces to
+    group: str = ""  # file stem (router/faq/pii_leak/...) for breakdown
     phone: str | None = None  # pin a seed customer (action cases need specific data)
 
     @classmethod
-    def from_dict(cls, data: dict, group: str = "") -> "EvalCase":
+    def from_dict(cls, data: dict, group: str = "", suite: str = "golden") -> "EvalCase":
+        suite = data.get("suite", suite)
+        # critical severity is implied by the adversarial_critical suite, overridable per case
+        default_severity = "critical" if suite == "adversarial_critical" else "quality"
         return cls(
             id=data["id"],
-            suite=data.get("suite", "golden"),
-            severity=data.get("severity", "quality"),
+            suite=suite,
+            severity=data.get("severity", default_severity),
             turns=[Turn(**t) if isinstance(t, dict) else Turn(user=t) for t in data["turns"]],
             expect=data.get("expect", {}),
             judge=data.get("judge"),
@@ -55,5 +58,5 @@ def load_cases(suite: str = "golden") -> list[EvalCase]:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
         for raw in data:
-            cases.append(EvalCase.from_dict(raw, group=group))
+            cases.append(EvalCase.from_dict(raw, group=group, suite=suite))
     return cases

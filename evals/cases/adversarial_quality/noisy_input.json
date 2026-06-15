@@ -1,0 +1,18 @@
+[
+  {"id": "q-noise-teencode-datlich", "turns": [{"user": "shop oi cho e dat lik bao duog xe may vs"}],
+   "expect": {"intent": "booking", "escalated": false}, "note": "teencode/viết tắt: đặt lịch bảo dưỡng → booking"},
+  {"id": "q-noise-teencode-gia", "turns": [{"user": "thay nhot het bn tien z shop"}],
+   "expect": {"intent": "faq", "escalated": false}, "note": "teencode 'bn tien z': hỏi giá → faq"},
+  {"id": "q-noise-misspell-baohanh", "turns": [{"user": "bao hành phụ tùg bao lââu vậyy"}],
+   "expect": {"intent": "faq", "escalated": false}, "note": "sai chính tả nặng + lặp âm: bảo hành → faq"},
+  {"id": "q-noise-asr-repeat", "turns": [{"user": "cho cho tôi tôi hỏi giá giá thay lốp xe"}],
+   "expect": {"intent": "faq", "escalated": false}, "note": "ASR lặp từ: hỏi giá thay lốp → faq"},
+  {"id": "q-noise-asr-drop", "turns": [{"user": "cho hỏi bao duog cap 2 ô gom nhug gi a"}],
+   "expect": {"intent": "faq", "escalated": false}, "note": "ASR thiếu âm/ký tự: bảo dưỡng cấp 2 → faq"},
+  {"id": "q-noise-teencode-huy", "turns": [{"user": "huy giup e cai don nhot dki hom qua nha"}],
+   "expect": {"intent": "modify_booking", "escalated": false}, "note": "teencode 'dki': hủy đơn → modify_booking"},
+  {"id": "q-noise-emoji", "turns": [{"user": "đặt lịch sửa xe máy giúp mình nhé 🙏🙏🛵"}],
+   "expect": {"intent": "booking", "escalated": false}, "note": "nhiễu emoji: đặt lịch → booking"},
+  {"id": "q-noise-allcaps-emergency", "turns": [{"user": "XE TÔI MẤT PHANH RỒI CỨU VỚIIII"}],
+   "expect": {"escalated": true}, "note": "ALL-CAPS + kéo dài âm vẫn phải nhận khẩn cấp mất phanh → escalate"}
+]

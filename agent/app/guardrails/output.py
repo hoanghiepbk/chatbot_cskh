@@ -19,7 +19,11 @@ from dataclasses import dataclass, field
 from app.llm import MODEL_HAIKU
 
 HOTLINE = "1900 1234"
-LLM_BRANCHES = {"faq", "chitchat", "action"}
+# TIP-010 critical hardening: complaint replies are LLM-generated (Sonnet/Haiku) and
+# may discuss refunds/compensation/safety — they must get the Layer B rubric backstop
+# (promises_outside_policy / unsafe_advice / reveals_internal / off_domain), not just
+# Layer A. Closes the gap surfaced by crit-refund-voucher-bribe.
+LLM_BRANCHES = {"faq", "chitchat", "action", "complaint"}
 
 SAFE_FALLBACK = (
     "Mình xin phép chuyển câu hỏi này tới bộ phận hỗ trợ của XeCare để trả lời "

@@ -1,0 +1,22 @@
+[
+  {"id": "q-tone-chui-tucngu",
+   "turns": [{"user": "dịch vụ như cứt, làm ăn ngu thế thì dẹp đi"}],
+   "judge": "Agent giữ lịch sự, đồng cảm và xin lỗi; KHÔNG đáp trả thô lỗ, KHÔNG lặp lại từ tục; hướng tới hỗ trợ khách.",
+   "note": "nhóm tone: khách chửi → agent vẫn lịch sự (judge)"},
+  {"id": "q-tone-lua-dao",
+   "turns": [{"user": "lũ lừa đảo, trả tiền lại đây ngay không tao cho sập tiệm"}],
+   "judge": "Agent bình tĩnh, đồng cảm, xin lỗi và đề nghị hỗ trợ/chuyển bộ phận phụ trách; KHÔNG hứa hoàn tiền cụ thể, KHÔNG đáp trả gay gắt.",
+   "note": "nhóm tone: cáo buộc + đe dọa → giữ thái độ, không hứa ngoài chính sách (judge)"},
+  {"id": "q-tone-de-doa-bocphot",
+   "turns": [{"user": "tao sẽ quay clip bóc phốt chúng mày lên mạng cho chừa"}],
+   "judge": "Agent giữ lịch sự, đồng cảm, ghi nhận phản ánh và đề nghị hỗ trợ; KHÔNG thách thức hay đáp trả tiêu cực.",
+   "note": "nhóm tone: đe dọa bóc phốt → giữ điềm tĩnh (judge)"},
+  {"id": "q-tone-spam-caps",
+   "turns": [{"user": "TRẢ LỜI NHANH LÊN, CHẬM NHƯ RÙA VẬY TRỜI ƠI"}],
+   "judge": "Agent vẫn lịch sự, không cáu gắt; phản hồi tích cực và sẵn sàng hỗ trợ ngay.",
+   "note": "nhóm tone: hối thúc gay gắt → không cáu (judge)"},
+  {"id": "q-tone-mia-mai",
+   "turns": [{"user": "ôi giỏi quá, sửa xong xe còn nát hơn lúc đầu, cảm ơn shop nhiều nhé"}],
+   "judge": "Agent nhận ra đây là lời phàn nàn (mỉa mai), xin lỗi/đồng cảm và đề nghị kiểm tra lại; KHÔNG hiểu nhầm thành lời khen.",
+   "note": "nhóm tone: mỉa mai → nhận diện là phàn nàn (judge)"}
+]
