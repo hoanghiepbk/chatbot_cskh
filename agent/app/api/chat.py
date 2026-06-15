@@ -31,6 +31,9 @@ _action_sessions: dict[str, tuple[dict, float]] = {}
 # TIP-007: open-emergency state machine ({'open': bool, 'asks': int})
 _emergency_sessions: dict[str, tuple[dict, float]] = {}
 
+# TIP-008: HITL conversation state ({'complaint_attempted': bool, 'handback_note': str|None})
+_hitl_sessions: dict[str, tuple[dict, float]] = {}
+
 
 def get_pii_session(conversation_id: str) -> PIISession:
     now = time.time()
@@ -41,8 +44,35 @@ def get_pii_session(conversation_id: str) -> PIISession:
     return _pii_sessions[conversation_id][0]
 
 
+def peek_pii_session(conversation_id: str) -> PIISession | None:
+    """Return the session only if it exists and is unexpired — never creates one.
+    Used by reveal_contact to distinguish 'no map' (410 Gone) from a fresh map."""
+    entry = _pii_sessions.get(conversation_id)
+    if not entry:
+        return None
+    session, ts = entry
+    if time.time() - ts > SESSION_TTL_SECONDS:
+        del _pii_sessions[conversation_id]
+        return None
+    return session
+
+
 def register_pii_session(conversation_id: str, session: PIISession) -> None:
     _pii_sessions[conversation_id] = (session, time.time())
+
+
+def get_hitl_session(conversation_id: str) -> dict:
+    now = time.time()
+    for key in [k for k, (_, ts) in _hitl_sessions.items() if now - ts > SESSION_TTL_SECONDS]:
+        del _hitl_sessions[key]
+    if conversation_id not in _hitl_sessions:
+        _hitl_sessions[conversation_id] = ({"complaint_attempted": False, "handback_note": None}, now)
+    return _hitl_sessions[conversation_id][0]
+
+
+def set_handback_note(conversation_id: str, note: str | None) -> None:
+    session = get_hitl_session(conversation_id)
+    session["handback_note"] = note
 
 
 def get_action_session(conversation_id: str) -> dict:
@@ -158,6 +188,21 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
         raise HTTPException(status_code=404, detail="conversation not found")
     customer_id = conv.data[0]["customer_id"]
 
+    # TIP-008: while a human staff member owns the conversation, the agent graph
+    # is OFF — just persist the customer's message (masked) and let Realtime
+    # deliver it to the staff console. 0 LLM calls.
+    if conv.data[0]["mode"] == "human":
+        pii_session = get_pii_session(conversation_id)
+        supabase.table("messages").insert(
+            {
+                "conversation_id": conversation_id,
+                "sender": "customer",
+                "content": body.text,
+                "content_masked": pii_session.mask(body.text),
+            }
+        ).execute()
+        return {"reply": None, "mode": "human"}
+
     profile = {}
     if customer_id:
         rows = (
@@ -184,11 +229,13 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
     pii_session = get_pii_session(conversation_id)
     action_session = get_action_session(conversation_id)
     emergency_session = get_emergency_session(conversation_id)
+    hitl_session = get_hitl_session(conversation_id)
 
     state = {
         "conversation_id": conversation_id,
         "customer_id": customer_id,
         "customer_profile": {
+            "display_name": profile.get("display_name"),
             "vehicles": profile.get("vehicles", []),
             "facts": profile.get("facts", {}),
         },
@@ -199,6 +246,8 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
         "slots": action_session["slots"],
         "pending_action": action_session["pending_action"],
         "emergency_session": emergency_session,
+        "complaint_attempted": hitl_session["complaint_attempted"],
+        "handback_note": hitl_session["handback_note"],
         "guardrail_flags": {},
     }
     final = await app_state.chat_graph.ainvoke(state)
@@ -208,6 +257,10 @@ async def chat_message(conversation_id: str, body: MessageRequest, request: Requ
     set_emergency_session(
         conversation_id, final.get("emergency_session") or {"open": False, "asks": 0}
     )
+    hitl_session["complaint_attempted"] = bool(final.get("complaint_attempted"))
+    # handback note is consumed once — the turn after a resolve answers with context,
+    # then it's cleared so it never staleens later replies
+    hitl_session["handback_note"] = None
 
     reply_masked = final.get("reply", "")
     reply = pii_session.unmask(reply_masked)
