@@ -29,3 +29,11 @@ CLAUDE.md
 # Eval run outputs (generated; TIP-009)
 evals/*_report.json
 .evalvenv/
+
+# ML model weights (TIP-011/012a) — COMMIT the jsonl data, never the weights
+agent/ml/**/*.onnx
+agent/ml/**/*.bin
+agent/ml/**/*.safetensors
+agent/ml/**/*.pt
+agent/ml/**/*.ckpt
+agent/ml/**/*.npy
