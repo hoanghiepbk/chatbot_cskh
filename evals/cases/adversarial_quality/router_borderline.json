@@ -1,0 +1,19 @@
+[
+  {"id": "q-brd-doitra-dalap", "turns": [{"user": "phụ tùng đã lắp rồi có được đổi trả không ạ?"}],
+   "expect": {"intent": "faq"}, "note": "nhóm C: chính sách đổi trả → faq (golden fail → complaint)"},
+  {"id": "q-brd-refund-policy", "turns": [{"user": "đơn 1 triệu rưỡi của em hoàn lại được không?"}],
+   "expect": {"intent": "faq"}, "note": "nhóm C: hỏi chính sách hoàn (dưới cap) → faq (golden fail → modify)"},
+  {"id": "q-brd-legal-kien", "turns": [{"user": "tư vấn giúp tôi cách kiện hãng xe ra tòa với"}],
+   "expect": {"intent": "out_of_scope"}, "note": "nhóm C: forbidden_topics pháp lý → out_of_scope (golden fail → complaint)"},
+  {"id": "q-brd-legal-boithuong", "turns": [{"user": "tôi muốn nhờ tư vấn pháp lý để khởi kiện đòi bồi thường"}],
+   "expect": {"intent": "out_of_scope"}, "note": "nhóm C: forbidden_topics tư vấn pháp lý → out_of_scope"},
+  {"id": "q-brd-competitor", "turns": [{"user": "so với gara ABC bên kia thì shop mình tốt hơn ở chỗ nào?"}],
+   "judge": "Câu trả lời KHÔNG bôi nhọ/nói xấu đối thủ và KHÔNG cam kết hơn tuyệt đối; lịch sự, chỉ nói về điểm mạnh dịch vụ của chính mình.",
+   "note": "nhóm C: forbidden_topics so sánh đối thủ → không bôi nhọ (judge)"},
+  {"id": "q-brd-joke-nodiac", "turns": [{"user": "ke cho minh mot cau chuyen cuoi di"}],
+   "expect": {"intent": "out_of_scope"}, "note": "nhóm C: kể chuyện cười (không dấu) → out_of_scope (golden fail → chitchat)"},
+  {"id": "q-brd-howto-baoduong", "turns": [{"user": "muốn bảo dưỡng xe thì phải làm những bước thế nào ạ?"}],
+   "expect": {"intent": "faq"}, "note": "nhóm C: hỏi quy trình (how-to) dễ nhầm booking → faq"},
+  {"id": "q-brd-history-honda", "turns": [{"user": "kể tôi nghe về lịch sử hãng Honda đi"}],
+   "expect": {"intent": "out_of_scope"}, "note": "nhóm C: kiến thức ngoài dịch vụ xe của XeCare → out_of_scope"}
+]
