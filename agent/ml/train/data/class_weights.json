@@ -1,0 +1,19 @@
+{
+  "intent": {
+    "faq": 1.6389,
+    "booking": 1.0536,
+    "order_lookup": 0.8676,
+    "modify_booking": 1.475,
+    "emergency": 1.0536,
+    "complaint": 0.7763,
+    "chitchat": 0.8676,
+    "out_of_scope": 0.8194
+  },
+  "ner_stratum": {
+    "PHONE": 1.4545,
+    "NONE": 0.4211,
+    "PLATE": 1.4545,
+    "ID": 1.6,
+    "EMAIL": 1.6
+  }
+}

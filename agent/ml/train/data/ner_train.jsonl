@@ -1,0 +1,52 @@
+{"text": "Chào anh, em gửi báo giá qua mail nha: support.xecare@gmail.com. Anh check giúp em ạ!", "entities": [{"type": "EMAIL", "start": 39, "end": 63, "value": "support.xecare@gmail.com"}], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "mai em qua nhan xe nhe gui ho so ve email: tranhoangminh.1995@yahoo.com.vn", "entities": [{"type": "EMAIL", "start": 43, "end": 74, "value": "tranhoangminh.1995@yahoo.com.vn"}], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "Mình cần báo giá chi tiết, gửi file qua quachhoangson.work@outlook.com.vn nhé. Thanks!", "entities": [{"type": "EMAIL", "start": 40, "end": 73, "value": "quachhoangson.work@outlook.com.vn"}], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "Chị cần đặt lịch bảo hành xe Future Neo, gửi lịch hẹn về email: phamthuylinh88@hotmail.com được không ạ? Cảm ơn shop nhiều!", "entities": [{"type": "EMAIL", "start": 64, "end": 90, "value": "phamthuylinh88@hotmail.com"}], "style": "mixed", "source": "synth"}
+{"text": "Chào shop, em muốn đặt lịch bảo dưỡng xe lead 125 vào thứ 7 tuần này ạ. Liên hệ em qua email: nguyenvana@gmail.com nhé. Cảm ơn shop!", "entities": [{"type": "EMAIL", "start": 94, "end": 114, "value": "nguyenvana@gmail.com"}], "style": "mixed", "source": "synth"}
+{"text": "anh cần mua lốp cho sirius đời 2018, báo giá qua mail anhtuan.moto@yahoo.com giúp em nhé", "entities": [{"type": "EMAIL", "start": 54, "end": 76, "value": "anhtuan.moto@yahoo.com"}], "style": "mixed", "source": "synth"}
+{"text": "cho minh hoi thay dau dong co full synthetic het bao nhieu tien, cccd 001234567890 nha shop", "entities": [{"type": "ID", "start": 70, "end": 82, "value": "001234567890"}], "style": "mixed", "source": "synth"}
+{"text": "Cmnd toi la 012345678 nha ban, toi muon book lich sua chua dong co va thay 4 lop xe luon duoc ko?", "entities": [{"type": "ID", "start": 12, "end": 21, "value": "012345678"}], "style": "mixed", "source": "synth"}
+{"text": "Xin chào! Tôi cần đặt lịch kiểm tra xe, CCCD: 079188234567. Xe hiện tại đã chạy được khoảng 45000km rồi ạ", "entities": [{"type": "ID", "start": 46, "end": 58, "value": "079188234567"}], "style": "mixed", "source": "synth"}
+{"text": "Chào XeCare, em muốn đặt lịch bảo dưỡng định kỳ 20.000 km cho xe exciter, CMND của em là 024598763 ạ", "entities": [{"type": "ID", "start": 89, "end": 98, "value": "024598763"}], "style": "mixed", "source": "synth"}
+{"text": "cccd cua minh la 001203456789 nhe, minh muon dat lich bao duong ngay mai luc 9h sang dc khong ad?", "entities": [{"type": "ID", "start": 17, "end": 29, "value": "001203456789"}], "style": "mixed", "source": "synth"}
+{"text": "so cccd 036199012345 day a! minh can bao duong xe gap lam, ngay mai co slot nao trong ko shop?", "entities": [{"type": "ID", "start": 8, "end": 20, "value": "036199012345"}], "style": "mixed", "source": "synth"}
+{"text": "e vua chay dc 20.000 km thi xe cu bao duong lan dau het bao nhieu tien a? nghe noi khoang 350.000d dung k a?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Lịch hẹn 3 chiếc xe ngày mai lúc 9h, mỗi xe chi phí khoảng 800.000đ, tổng gần 2tr4", "entities": [], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "Shop báo giá thay nhớt fullsyn cho airblade đi, e thấy bên ngoài khoảng 350000đ mà k biết chất lượng thế nào", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "bao duong 50000 km het bao nhieu tien vay shop? em co 3tr co du khong a", "entities": [], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "cho mình hỏi bảo dưỡng định kỳ 10.000 km cho exciter 155 hết bao nhiêu tiền vậy shop", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "shop ơi cho e đặt 2 cái gương chiếu hậu rizoma fake với, ship về tận nhà đc k ạ", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "cho em hoi gia phanh xe sh bao nhieu a shop oi cam on", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Em muốn book 2 slot rửa xe vào chiều mai, 1 xe sedan và 1 xe 7 chỗ. Chi phí ước tính 180.000đ cho cả 2 xe đúng không ạ?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Mình cần độ pô Akrapovic cho winner x, shop có làm không và giá khoảng 3 triệu 500 đúng không ạ", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Mình cần mua 3 can dầu nhớt synthetic, giá 1 can 450.000đ, tổng 1.350.000đ. Ship trong ngày được không nhỉ?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Cho mình hỏi thay nhớt tổng hợp hết bao nhiêu tiền ạ? Xe chạy 30.000km", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Chi phí thay nhớt khoảng 450.000đ, lọc gió 120.000đ ạ", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "mình cần tư vấn thay lọc gió xe PCX 160, xe chạy được 12.000km, nghe bảo giá khoảng 150000 đồng đúng không ad?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Mình đã chạy được 25000 km rồi, cần thay 4 lốp mới, báo giá cho mình với. Tổng chi phí khoảng 2.500.000đ phải không?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Em cần bảo dưỡng định kỳ cho Wave RSX, xe chạy 28.500km rồi ạ. Dự kiến chi phí khoảng 450000đ có đủ không shop?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Anh ơi cho e hỏi gói bảo dưỡng 3 lần giá 2.500.000đ có bao gồm thay nhớt và lọc không ạ? E thấy quãng đường 15.000 km rồi cần đi sớm", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "anh oi cho e hoi gia thay dau xe vision bao nhieu v, xe e chay dc 15000km roi", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Mình cần thay 2 má phanh trước và kiểm tra hệ thống treo, xe chạy 28.000 km rồi. Tổng chi phí dự kiến khoảng 850.000đ đúng không shop?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "cho mình hỏi nếu mua gói bảo dưỡng 5 lần giá 4.200.000 thì có ưu đãi gì thêm ko? xe mình chạy được 32.000 km rồi", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "thay ắc quy mất bao lâu, chi phí bao nhiêu, xe chạy 65000km", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Xe em đi được 15000 km rồi, có cần thay nhớt không ạ? Giá thay nhớt khoảng bao nhiêu vậy shop?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "bên mình đã chạy được 45.000 km rồi, nên bảo dưỡng chưa a", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Ad cho em hỏi nếu xe đã chạy 50.000 km thì nên thay những gì? Chi phí khoảng 1.500.000 đến 2.000.000 có đủ không ạ?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Cảm ơn bạn đã đặt lịch! Tổng chi phí dự kiến 2.500.000đ cho gói bảo dưỡng 30.000km", "entities": [], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "Thay 4 lốp mất khoảng 3500000 đồng đúng ko? xe em chạy được 60.000 km rồi", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Xe em vừa đi được 18.500 km thôi ạ, thay nhớt hết bao nhiêu tiền vậy? Khoảng 450k phải không?", "entities": [], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "Xe em bị hở má phanh rồi, mai ghé shop sửa nhé, sdt 0328 756 491 tên Minh", "entities": [{"type": "PHONE", "start": 52, "end": 64, "value": "0328 756 491"}], "style": "mixed", "source": "synth"}
+{"text": "cho e hoi gia thay dau phap dong 1 lit bao nhiu a, xe e chay dc 30000km r, sdt +84 908 765 432 a nhan tin cho e nhe", "entities": [{"type": "PHONE", "start": 79, "end": 94, "value": "+84 908 765 432"}], "style": "mixed", "source": "synth"}
+{"text": "Em chạy được 20.000 km rồi a ơi, muốn thay nhớt Shell giá 350.000đ có được k ạ? Liên hệ e qua 0912 345 678 nha", "entities": [{"type": "PHONE", "start": 94, "end": 106, "value": "0912 345 678"}], "style": "mixed", "source": "synth"}
+{"text": "Chào shop, e muốn đặt lịch bảo dưỡng xe SH 150i vào thứ 7 tuần sau ạ. SĐT e là 0912 345 678 nhé", "entities": [{"type": "PHONE", "start": 79, "end": 91, "value": "0912 345 678"}], "style": "mixed", "source": "synth"}
+{"text": "Em cần thay lốp trước cho xe Lead, liên hệ em qua số +84987654321 để tư vấn giá nhé shop", "entities": [{"type": "PHONE", "start": 53, "end": 65, "value": "+84987654321"}], "style": "mixed", "source": "synth"}
+{"text": "a đang ở bình dương, muon dat lich rua xe + thay nhot syn cho sh, lien he 0901234567 nha shop", "entities": [{"type": "PHONE", "start": 74, "end": 84, "value": "0901234567"}], "style": "mixed", "source": "synth"}
+{"text": "a oi, e can thay loc gio gan, xe chay duoc 12000 km roi, sdt e 0913-456-789 anh zalo e de tu van nha", "entities": [{"type": "PHONE", "start": 63, "end": 75, "value": "0913-456-789"}], "style": "mixed", "source": "synth"}
+{"text": "51F-234.56 đặt lịch bảo dưỡng ngày mai được không shop", "entities": [{"type": "PLATE", "start": 0, "end": 10, "value": "51F-234.56"}], "style": "mixed", "source": "synth"}
+{"text": "Biển số 29A-123.45 của em bị rung lúc chạy trên 80km/h, phải kiểm tra gì ạ?", "entities": [{"type": "PLATE", "start": 8, "end": 18, "value": "29A-123.45"}], "style": "mixed", "source": "synth"}
+{"text": "em muon dat lich bao duong cho xe 30F12345 vao thu 6 tuan sau dc ko a", "entities": [{"type": "PLATE", "start": 34, "end": 42, "value": "30F12345"}], "style": "mixed", "source": "synth"}
+{"text": "60A-888.99 muốn làm vệ sinh kim phun xăng, có dịch vụ này không shop ơi?", "entities": [{"type": "PLATE", "start": 0, "end": 10, "value": "60A-888.99"}], "style": "mixed", "source": "synth"}
+{"text": "29B-789.12 hôm qua báo đèn check engine, cần kiểm tra gấp", "entities": [{"type": "PLATE", "start": 0, "end": 10, "value": "29B-789.12"}], "style": "mixed", "source": "synth"}
+{"text": "Xe 92C-567.89 cua em den han bao duong roi, dat lich ngay mai duoc khong", "entities": [{"type": "PLATE", "start": 3, "end": 13, "value": "92C-567.89"}], "style": "mixed", "source": "synth"}
+{"text": "Xe 30K-456.78 cần bảo dưỡng định kỳ ạ", "entities": [{"type": "PLATE", "start": 3, "end": 13, "value": "30K-456.78"}], "style": "mixed", "source": "synth"}
