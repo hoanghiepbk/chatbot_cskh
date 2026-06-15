@@ -1,0 +1,10 @@
+# Eval-only dependencies (TIP-009) — NOT part of the agent runtime.
+# The golden runner needs only httpx + supabase (already in the agent venv).
+# RAGAS adds the heavy judge/metric stack; install in a separate eval venv:
+#   python -m venv .evalvenv && .evalvenv\Scripts\pip install -r evals/requirements.txt
+httpx
+supabase>=2.31.0
+ragas>=0.2.0
+langchain-anthropic>=0.3.0
+langchain-huggingface>=0.1.0
+FlagEmbedding>=1.4.0
