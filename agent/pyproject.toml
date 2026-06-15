@@ -11,6 +11,9 @@ dependencies = [
     "supabase>=2.31.0",
     "langgraph>=1.2.4",
     "anthropic>=0.109.1",
+    # torch is pulled transitively by flagembedding; declared here only to bind it
+    # to the CPU wheel index below (uv sources apply to declared deps) — [TIP-010.5]
+    "torch",
 ]
 
 [dependency-groups]
@@ -19,6 +22,18 @@ dev = [
     "httpx",
     "ruff",
 ]
+
+# [TIP-010.5] Force the CPU torch wheel for deploy: PyPI ships the CUDA build on
+# Linux (torch+cuXXX → ~6GB extra nvidia-* deps) but the agent is CPU-only. This
+# matches the CPU torch already used on the local Windows venv. Same dependency,
+# CPU variant — not a tech-stack change.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [tool.ruff]
 # Default ruff config per TIP-001
