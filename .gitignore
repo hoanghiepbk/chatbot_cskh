@@ -28,6 +28,7 @@ CLAUDE.md
 
 # Eval run outputs (generated; TIP-009)
 evals/*_report.json
+evals/benchmark_router.json
 .evalvenv/
 
 # ML model weights (TIP-011/012a) — COMMIT the jsonl data, never the weights
