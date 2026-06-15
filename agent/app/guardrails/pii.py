@@ -74,3 +74,25 @@ class PIISession:
         return PLACEHOLDER_RE.sub(
             lambda m: self._value_by_placeholder.get(m.group(0), m.group(0)), text
         )
+
+    # ---- serialization (TIP-008b) — for jsonb persistence; mask/unmask unchanged ----
+
+    def to_dict(self) -> dict:
+        # tuple keys can't be JSON — store placeholder_by_key as a list of triples
+        return {
+            "value_by_placeholder": self._value_by_placeholder,
+            "placeholder_by_key": [
+                [t, c, ph] for (t, c), ph in self._placeholder_by_key.items()
+            ],
+            "counters": self._counters,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PIISession":
+        session = cls()
+        session._value_by_placeholder = dict(data.get("value_by_placeholder", {}))
+        session._placeholder_by_key = {
+            (t, c): ph for t, c, ph in data.get("placeholder_by_key", [])
+        }
+        session._counters = dict(data.get("counters", {}))
+        return session
