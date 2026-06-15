@@ -69,6 +69,12 @@ class PIISession:
         self.last_found = found
         return text
 
+    def mask_span(self, surface: str, pii_type: str) -> str:
+        """[TIP-012a] Register a PII surface the regex missed (PhoBERT NER union) and
+        return its placeholder. Additive — does NOT change mask()/unmask() (TIP-004
+        contract); unmask() already restores any [TYPE_n] placeholder."""
+        return self._placeholder_for(pii_type, surface, surface)
+
     def unmask(self, text: str) -> str:
         """Replace every known placeholder back with its original value."""
         return PLACEHOLDER_RE.sub(

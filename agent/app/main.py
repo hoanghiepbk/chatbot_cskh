@@ -63,6 +63,21 @@ async def lifespan(app: FastAPI):
 
     app.state.session_store = SessionStore(client)  # [TIP-008b] persistent sessions
 
+    # [TIP-012a] eager-load PhoBERT ONNX guard ONLY when enabled (default off → None,
+    # so the Haiku router + regex injection path is unchanged). Heavy deps imported here.
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    from app.config import use_phobert
+
+    phobert_guard = None
+    if use_phobert():
+        _sys.path.insert(0, str(_Path(__file__).resolve().parents[1] / "ml" / "phobert"))
+        from infer import PhoBERTGuard
+
+        phobert_guard = PhoBERTGuard()
+    app.state.phobert = phobert_guard
+
     deps = GraphDeps(
         llm=llm,
         system_prompt=prompt_row["content"],
@@ -73,6 +88,7 @@ async def lifespan(app: FastAPI):
         trace=log_trace,
         tools=tools,
         supabase=client,  # [TIP-008] handoff package reads messages/trace
+        phobert=phobert_guard,  # [TIP-012a] None unless USE_PHOBERT=true
     )
     app.state.chat_graph = build_graph(deps)
     yield

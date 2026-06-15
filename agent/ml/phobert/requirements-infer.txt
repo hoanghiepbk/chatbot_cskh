@@ -1,0 +1,8 @@
+# PhoBERT INFERENCE extras (TIP-012a) — install into the AGENT venv ONLY when
+# turning on USE_PHOBERT=true. Inference runs on ONNX Runtime (CPU) — no torch
+# needed for inference itself; transformers is used for the tokenizer only and
+# underthesea for word-segmentation (MUST match training preprocessing).
+# Left out of agent/pyproject.toml on purpose so the default image stays light.
+onnxruntime>=1.18
+transformers>=4.40
+underthesea>=6.8.0

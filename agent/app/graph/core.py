@@ -118,6 +118,7 @@ class GraphDeps:
     trace: Callable[..., Awaitable[None]]  # log_trace-compatible
     tools: Any = None  # ToolKit (TIP-006) — fakes/spies in tests
     supabase: Any = None  # service-role client (TIP-008) — handoff reads messages/trace
+    phobert: Any = None  # PhoBERTGuard (TIP-012a) — None → Haiku router + regex injection
     extra: dict = field(default_factory=dict)
 
 
@@ -164,6 +165,10 @@ def build_graph(deps: GraphDeps):
     threshold = float(deps.policy.get("escalate_confidence_below", 0.7))
     # TIP-008: threshold now lives in policy_registry (was a TIP-005 hardcode)
     injection_threshold = float(deps.policy.get("injection_threshold", 0.5))
+    # TIP-012a: PhoBERT router confidence floor (below → Haiku fallback)
+    from app.config import phobert_intent_threshold
+
+    phobert_threshold = phobert_intent_threshold()
 
     async def trace(state: AgentState, step_type: str, payload: dict, **kw) -> None:
         await deps.trace(
@@ -195,17 +200,44 @@ def build_graph(deps: GraphDeps):
     # ---------- nodes ----------
 
     async def guardrail_in(state: AgentState) -> dict:
-        # pre_gate ran on raw text in route_entry; here: mask + injection score
+        # pre_gate ran on raw text in route_entry; here: mask + injection score.
+        # The regex/keyword baseline ALWAYS runs (TIP-004 contract unchanged).
         result = run_guardrail_in(state["raw_text"], state["pii_session"])
         flags = {
             "emergency": result.emergency,
             "injection_score": result.injection_score,
             "pii_found": result.pii_found,
         }
+        masked = result.masked_text
+        # [TIP-012a] PhoBERT augments (never replaces) the baseline when enabled.
+        if deps.phobert is not None:
+            pred = deps.phobert.predict(masked)  # one call — router reuses via flags
+            flags["injection_score"] = max(flags["injection_score"], pred["injection_score"])
+            flags["phobert_intent"] = pred["intent"]
+            flags["phobert_conf"] = pred["intent_conf"]
+            # NER union: mask PII the regex missed (PhoBERT found in the masked text)
+            for sp in pred.get("ner_spans", []):
+                for cand in (sp.get("text", ""), sp.get("text", "").replace("_", " ")):
+                    if cand and cand in masked and not cand.startswith("["):
+                        masked = masked.replace(cand, state["pii_session"].mask_span(cand, sp["type"]))
+                        break
+            # emergency-FP measurement — pre_gate layer 1 STILL wins (defense in depth), just log
+            if flags["emergency"] and pred["intent"] != "emergency" and pred["intent_conf"] >= 0.8:
+                await trace(state, "phobert_emergency_fp_candidate",
+                            {"phobert_intent": pred["intent"], "conf": pred["intent_conf"]})
         await trace(state, "guardrail_in", flags)
-        return {"masked_text": result.masked_text, "guardrail_flags": flags}
+        return {"masked_text": masked, "guardrail_flags": flags}
 
     async def router(state: AgentState) -> dict:
+        # [TIP-012a] hybrid: trust PhoBERT intent when confident, else Haiku fallback.
+        # PhoBERT prediction was computed once in guardrail_in (reused via flags).
+        flags = state.get("guardrail_flags", {})
+        if deps.phobert is not None and flags.get("phobert_conf", 0.0) >= phobert_threshold:
+            intent, confidence = flags["phobert_intent"], float(flags["phobert_conf"])
+            await trace(state, "router",
+                        {"intent": intent, "confidence": confidence, "engine": "phobert"})
+            return {"intent": intent, "confidence": confidence, "router_failed": False}
+
         parsed = None
         for _ in range(2):  # one retry on broken JSON
             result = await llm_call(
@@ -224,7 +256,8 @@ def build_graph(deps: GraphDeps):
             intent, confidence, failed = "out_of_scope", 0.0, True
         else:
             intent, confidence, failed = parsed[0], parsed[1], False
-        await trace(state, "router", {"intent": intent, "confidence": confidence})
+        await trace(state, "router",
+                    {"intent": intent, "confidence": confidence, "engine": "haiku"})
         return {"intent": intent, "confidence": confidence, "router_failed": failed}
 
     async def faq(state: AgentState) -> dict:
