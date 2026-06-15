@@ -97,11 +97,14 @@ insert into parts_orders (customer_id, items, status, total_vnd, paid) values
      'processing', 420000, false);
 
 -- ============ policy_registry v1 ============
+-- v1 inactive: migration 0006 (TIP-008) ships core_policy v2 active=true, and
+-- migrations run BEFORE seed on db reset — seeding v1 active would create two
+-- active rows (same reasoning as prompt_registry below).
 
 insert into policy_registry (name, version, rules, active) values
     ('core_policy', 1,
      '{"refund_cap_vnd":2000000,"write_value_cap_vnd":5000000,"escalate_confidence_below":0.7,"forbidden_topics":["tư vấn pháp lý","so sánh đối thủ"]}',
-     true);
+     false);
 
 -- ============ prompt_registry v1 ============
 -- v1 inactive: migration 0004 (TIP-005) ships system_main v2 active=true, and
