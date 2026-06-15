@@ -1,0 +1,27 @@
+# Keep the build context tiny — only agent/ source + lockfile are needed.
+.git
+.github
+**/.venv
+**/__pycache__
+**/*.pyc
+.ruff_cache
+.pytest_cache
+
+# other workspaces — not part of the agent image
+console
+widget
+evals
+supabase
+docs
+scripts
+
+# local caches / secrets / models (never ship)
+.env
+*.env
+**/.cache
+**/models
+*.md
+!agent/**
+
+# node
+**/node_modules
