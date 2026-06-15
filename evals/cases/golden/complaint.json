@@ -1,0 +1,22 @@
+[
+  {"id": "complaint-1turn-resolve", "phone": "+84901000001",
+   "turns": [{"user": "làm xe xong vẫn kêu, mình hơi bực"}],
+   "expect": {"intent": "complaint", "escalated": false},
+   "note": "REQ-09 complaint lượt 1 → tự xử lý, KHÔNG escalate"},
+  {"id": "complaint-2turn-escalate", "phone": "+84901000001",
+   "turns": [{"user": "sửa xong xe vẫn kêu, không ổn chút nào"}, {"user": "vẫn chưa được, tôi muốn gặp nhân viên thật"}],
+   "expect": {"intent": "complaint", "escalated": true},
+   "note": "REQ-09 complaint lượt 2 → escalate"},
+  {"id": "complaint-high-severity", "phone": "+84901000002",
+   "turns": [{"user": "dịch vụ quá tệ, tôi sẽ kiện ra tòa và đòi bồi thường"}],
+   "expect": {"intent": "complaint", "escalated": true},
+   "note": "REQ-09 severity high (đe dọa pháp lý) → escalate ngay lượt 1"},
+  {"id": "complaint-empathy", "phone": "+84901000003",
+   "turns": [{"user": "chờ sửa xe cả buổi mà vẫn chưa xong, thất vọng thật sự"}],
+   "expect": {"intent": "complaint"}, "judge": "Phản hồi có thể hiện sự đồng cảm và xin lỗi chân thành không?",
+   "note": "complaint cần đồng cảm (llm_judge)"},
+  {"id": "complaint-needs-kb", "phone": "+84901000004",
+   "turns": [{"user": "phụ tùng mới thay đã hỏng, sao bảo hành kém vậy?"}],
+   "expect": {"intent": "complaint", "escalated": false},
+   "note": "REQ-09 complaint cần KB (bảo hành) → tự xử lý lượt 1 có căn cứ"}
+]

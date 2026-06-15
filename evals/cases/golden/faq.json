@@ -1,0 +1,39 @@
+[
+  {"id": "faq-bd-xemay-20k", "turns": [{"user": "xe máy đi 20.000 km cần làm những gì?"}], "expect": {"intent": "faq", "must_contain": ["curoa"], "citations_doc": ["01-lich-bao-duong-xe-may.md"]}, "note": "KB-01 mốc 20.000 km"},
+  {"id": "faq-bd-xemay-12k", "turns": [{"user": "mốc 12.000 km xe máy bảo dưỡng gì ạ?"}], "expect": {"intent": "faq", "citations_doc": ["01-lich-bao-duong-xe-may.md"]}, "note": "KB-01 mốc 12.000 km"},
+  {"id": "faq-bd-xemay-1k", "turns": [{"user": "xe mới mua chạy 1000 km đầu cần làm gì không?"}], "expect": {"intent": "faq", "citations_doc": ["01-lich-bao-duong-xe-may.md"]}, "note": "KB-01 mốc 1.000 km"},
+  {"id": "faq-bd-oto-cap2", "turns": [{"user": "ô tô bảo dưỡng cấp 2 gồm những hạng mục gì?"}], "expect": {"intent": "faq", "citations_doc": ["02-lich-bao-duong-o-to.md"]}, "note": "KB-02 ô tô"},
+  {"id": "faq-bd-oto-dau", "turns": [{"user": "bao lâu thì nên thay dầu động cơ ô tô?"}], "expect": {"intent": "faq", "citations_doc": ["02-lich-bao-duong-o-to.md"]}, "note": "KB-02 thay dầu ô tô"},
+
+  {"id": "faq-baohanh-thoihan", "turns": [{"user": "phụ tùng chính hãng bên mình bảo hành bao lâu?"}], "expect": {"intent": "faq", "must_contain": ["12 tháng"], "citations_doc": ["03-chinh-sach-bao-hanh.md"]}, "note": "KB-03 12 tháng/10.000km"},
+  {"id": "faq-baohanh-acquy", "turns": [{"user": "ắc quy được bảo hành thế nào ạ?"}], "expect": {"intent": "faq", "citations_doc": ["03-chinh-sach-bao-hanh.md"]}, "note": "KB-03 ắc quy 6-12 tháng"},
+  {"id": "faq-baohanh-cong", "turns": [{"user": "công sửa chữa có được bảo hành không?"}], "expect": {"intent": "faq", "must_contain": ["30 ngày"], "citations_doc": ["03-chinh-sach-bao-hanh.md"]}, "note": "KB-03 công 30 ngày"},
+  {"id": "faq-baohanh-quytrinh", "turns": [{"user": "muốn yêu cầu bảo hành thì làm sao?"}], "expect": {"intent": "faq", "citations_doc": ["03-chinh-sach-bao-hanh.md"]}, "note": "KB-03 quy trình"},
+
+  {"id": "faq-gia-maphanh-xemay", "turns": [{"user": "thay má phanh xe máy hết bao nhiêu tiền?"}], "expect": {"intent": "faq", "must_contain": ["tham khảo"], "citations_doc": ["04-bang-gia-dich-vu.md"]}, "note": "KB-04 giá phải kèm tham khảo"},
+  {"id": "faq-gia-nhot-xega", "turns": [{"user": "thay dầu láp xe tay ga giá khoảng nhiêu?"}], "expect": {"intent": "faq", "must_contain": ["tham khảo"], "citations_doc": ["04-bang-gia-dich-vu.md"]}, "note": "KB-04 giá xe ga"},
+  {"id": "faq-gia-bugi", "turns": [{"user": "thay bugi iridium giá thế nào?"}], "expect": {"intent": "faq", "must_contain": ["tham khảo"], "citations_doc": ["04-bang-gia-dich-vu.md"]}, "note": "KB-04 bugi"},
+  {"id": "faq-gia-oto-maphanh", "turns": [{"user": "thay má phanh trước ô tô bao nhiêu?"}], "expect": {"intent": "faq", "must_contain": ["tham khảo"], "citations_doc": ["04-bang-gia-dich-vu.md"]}, "note": "KB-04 giá ô tô"},
+  {"id": "faq-gia-curoa", "turns": [{"user": "thay dây curoa với bi nồi xe ga hết nhiêu tiền?"}], "expect": {"intent": "faq", "must_contain": ["tham khảo"], "citations_doc": ["04-bang-gia-dich-vu.md"]}, "note": "KB-04 curoa"},
+
+  {"id": "faq-cuuho-hotline", "turns": [{"user": "số hotline cứu hộ của bên mình là gì?"}], "expect": {"intent": "faq", "must_contain": ["1900 1234"], "citations_doc": ["05-quy-trinh-cuu-ho.md"]}, "note": "KB-05 hotline"},
+  {"id": "faq-cuuho-phamvi", "turns": [{"user": "cứu hộ phục vụ trong phạm vi bao xa?"}], "expect": {"intent": "faq", "citations_doc": ["05-quy-trinh-cuu-ho.md"]}, "note": "KB-05 phạm vi 30km"},
+  {"id": "faq-cuuho-phi", "turns": [{"user": "phí cứu hộ xe máy nội thành khoảng bao nhiêu?"}], "expect": {"intent": "faq", "must_contain": ["tham khảo"], "citations_doc": ["05-quy-trinh-cuu-ho.md"]}, "note": "KB-05 phí cứu hộ (giá → tham khảo)"},
+
+  {"id": "faq-doitra-hoantien", "turns": [{"user": "hoàn tiền phụ tùng mất bao lâu?"}], "expect": {"intent": "faq", "citations_doc": ["06-doi-tra-phu-tung.md"]}, "note": "KB-06 hoàn 5-7 ngày"},
+  {"id": "faq-doitra-huy", "turns": [{"user": "muốn hủy đơn phụ tùng thì điều kiện gì?"}], "expect": {"intent": "faq", "citations_doc": ["06-doi-tra-phu-tung.md"]}, "note": "KB-06 hủy đơn"},
+  {"id": "faq-doitra-dalap", "turns": [{"user": "phụ tùng đã lắp rồi có đổi trả được không?"}], "expect": {"intent": "faq", "citations_doc": ["06-doi-tra-phu-tung.md"]}, "note": "KB-06 đã lắp"},
+
+  {"id": "faq-datlich-doi", "turns": [{"user": "đổi hoặc hủy lịch hẹn cần báo trước bao lâu?"}], "expect": {"intent": "faq", "citations_doc": ["07-dat-lich-va-thanh-toan.md"]}, "note": "KB-07 trước 2 giờ"},
+  {"id": "faq-datlich-giờ", "turns": [{"user": "chi nhánh mở cửa mấy giờ vậy?"}], "expect": {"intent": "faq", "citations_doc": ["07-dat-lich-va-thanh-toan.md"]}, "note": "KB-07 giờ làm việc"},
+  {"id": "faq-datlich-thanhtoan", "turns": [{"user": "bên mình thanh toán bằng những hình thức nào?"}], "expect": {"intent": "faq", "citations_doc": ["07-dat-lich-va-thanh-toan.md"]}, "note": "KB-07 thanh toán"},
+  {"id": "faq-datlich-trehen", "turns": [{"user": "nếu em đến trễ hẹn thì sao ạ?"}], "expect": {"intent": "faq", "citations_doc": ["07-dat-lich-va-thanh-toan.md"]}, "note": "KB-07 trễ hẹn 30 phút"},
+
+  {"id": "faq-faq-tiengkeu", "turns": [{"user": "xe đang có tiếng kêu lạ, có sao không?"}], "expect": {"intent": "faq", "must_not_contain": ["không sao đâu", "vẫn chạy được", "yên tâm dùng tiếp"], "citations_doc": ["08-faq-chung.md"]}, "note": "KB-08 + an toàn: không kết luận an toàn từ xa"},
+  {"id": "faq-faq-phanhkeu", "turns": [{"user": "phanh xe em kêu rít, đi tiếp được không?"}], "expect": {"intent": "faq", "must_contain": ["kiểm tra"], "must_not_contain": ["yên tâm", "không sao", "vẫn chạy tốt"]}, "note": "REQ-07 an toàn phanh"},
+  {"id": "faq-faq-doxe", "turns": [{"user": "xe để lâu không đi có cần làm gì không?"}], "expect": {"intent": "faq", "citations_doc": ["08-faq-chung.md"]}, "note": "KB-08 chung"},
+  {"id": "faq-faq-loi", "turns": [{"user": "đèn báo lỗi sáng trên đồng hồ là bị gì?"}], "expect": {"intent": "faq"}, "note": "KB-08/02 đèn báo lỗi"},
+
+  {"id": "faq-nodiac-baohanh", "turns": [{"user": "bao hanh phu tung bao lau vay shop"}], "expect": {"intent": "faq", "must_contain": ["12 tháng"], "citations_doc": ["03-chinh-sach-bao-hanh.md"]}, "note": "faq không dấu + bảo hành"},
+  {"id": "faq-nodiac-gio", "turns": [{"user": "chu nhat shop co mo cua khong"}], "expect": {"intent": "faq", "citations_doc": ["07-dat-lich-va-thanh-toan.md"]}, "note": "faq không dấu + giờ CN"}
+]

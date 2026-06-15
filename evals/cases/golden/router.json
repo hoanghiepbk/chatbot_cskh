@@ -1,0 +1,50 @@
+[
+  {"id": "router-faq-1", "turns": [{"user": "xe máy đi 20.000 km thì cần bảo dưỡng những gì ạ?"}], "expect": {"intent": "faq"}, "note": "router/faq cơ bản"},
+  {"id": "router-faq-2", "turns": [{"user": "chính sách bảo hành phụ tùng của bên mình thế nào?"}], "expect": {"intent": "faq"}, "note": "router/faq bảo hành"},
+  {"id": "router-faq-3", "turns": [{"user": "thay nhớt xe ga hết khoảng bao nhiêu tiền?"}], "expect": {"intent": "faq"}, "note": "router/faq giá"},
+  {"id": "router-faq-4", "turns": [{"user": "bao lâu thì nên thay dầu một lần vậy shop"}], "expect": {"intent": "faq"}, "note": "router/faq đời thường"},
+  {"id": "router-faq-5", "turns": [{"user": "oto bao duong cap 2 gom nhung gi"}], "expect": {"intent": "faq"}, "note": "router/faq không dấu"},
+
+  {"id": "router-booking-1", "turns": [{"user": "em muốn đặt lịch bảo dưỡng xe máy"}], "expect": {"intent": "booking"}, "note": "router/booking cơ bản"},
+  {"id": "router-booking-2", "turns": [{"user": "cho mình hẹn lịch thay nhớt cuối tuần này với"}], "expect": {"intent": "booking"}, "note": "router/booking thời gian"},
+  {"id": "router-booking-3", "turns": [{"user": "đặt giúp anh suất kiểm tra xe sáng mai nhé"}], "expect": {"intent": "booking"}, "note": "router/booking đời thường"},
+  {"id": "router-booking-4", "turns": [{"user": "dat lich bao duong oto giup minh"}], "expect": {"intent": "booking"}, "note": "router/booking không dấu"},
+  {"id": "router-booking-5", "turns": [{"user": "mình cần book một slot sửa xe"}], "expect": {"intent": "booking"}, "note": "router/booking từ mượn"},
+
+  {"id": "router-order-1", "turns": [{"user": "cho em kiểm tra đơn phụ tùng của em với"}], "expect": {"intent": "order_lookup"}, "note": "router/order_lookup"},
+  {"id": "router-order-2", "turns": [{"user": "đơn nhớt em đặt hôm trước tới đâu rồi ạ?"}], "expect": {"intent": "order_lookup"}, "note": "router/order trạng thái"},
+  {"id": "router-order-3", "turns": [{"user": "tra giúp mình tình trạng đơn hàng"}], "expect": {"intent": "order_lookup"}, "note": "router/order tra cứu"},
+  {"id": "router-order-4", "turns": [{"user": "kiem tra don hang phu tung giup em"}], "expect": {"intent": "order_lookup"}, "note": "router/order không dấu"},
+
+  {"id": "router-modify-1", "turns": [{"user": "cho em hủy đơn nhớt em đặt hôm qua"}], "expect": {"intent": "modify_booking"}, "note": "router/modify hủy đơn"},
+  {"id": "router-modify-2", "turns": [{"user": "em muốn đổi lịch hẹn sang chiều mai được không?"}], "expect": {"intent": "modify_booking"}, "note": "router/modify đổi lịch"},
+  {"id": "router-modify-3", "turns": [{"user": "hủy giúp anh cái lịch bảo dưỡng đã đặt nhé"}], "expect": {"intent": "modify_booking"}, "note": "router/modify hủy lịch"},
+  {"id": "router-modify-4", "turns": [{"user": "huy don ma phanh giup minh"}], "expect": {"intent": "modify_booking"}, "note": "router/modify không dấu"},
+
+  {"id": "router-emergency-1", "turns": [{"user": "em vừa bị tai nạn trên đường, xe đổ không đi được"}], "expect": {"intent": "emergency", "escalated": true}, "note": "router/emergency tai nạn (pre_gate)"},
+  {"id": "router-emergency-2", "turns": [{"user": "xe mất phanh giữa dốc nguy hiểm quá"}], "expect": {"intent": "emergency", "escalated": true}, "note": "router/emergency mất phanh"},
+  {"id": "router-emergency-3", "turns": [{"user": "xe em bốc khói rồi cháy ở yên xe"}], "expect": {"intent": "emergency", "escalated": true}, "note": "router/emergency cháy (có dấu)"},
+  {"id": "router-emergency-4", "turns": [{"user": "cần cứu hộ gấp, xe chết máy trên cao tốc"}], "expect": {"intent": "emergency", "escalated": true}, "note": "router/emergency cứu hộ gấp"},
+
+  {"id": "router-complaint-1", "turns": [{"user": "làm xe xong vẫn kêu, tôi rất bực mình"}], "expect": {"intent": "complaint"}, "note": "router/complaint"},
+  {"id": "router-complaint-2", "turns": [{"user": "thái độ nhân viên hôm qua tệ quá, tôi không hài lòng"}], "expect": {"intent": "complaint"}, "note": "router/complaint thái độ"},
+  {"id": "router-complaint-3", "turns": [{"user": "sửa xong mà còn hỏng hơn lúc đầu, quá thất vọng"}], "expect": {"intent": "complaint"}, "note": "router/complaint chất lượng"},
+  {"id": "router-complaint-4", "turns": [{"user": "minh muon phan anh ve dich vu lan truoc"}], "expect": {"intent": "complaint"}, "note": "router/complaint không dấu"},
+
+  {"id": "router-chitchat-1", "turns": [{"user": "chào shop nhé"}], "expect": {"intent": "chitchat"}, "note": "router/chitchat chào"},
+  {"id": "router-chitchat-2", "turns": [{"user": "cảm ơn em nhiều nha"}], "expect": {"intent": "chitchat"}, "note": "router/chitchat cảm ơn"},
+  {"id": "router-chitchat-3", "turns": [{"user": "shop có khỏe không hôm nay vui chứ"}], "expect": {"intent": "chitchat"}, "note": "router/chitchat phiếm"},
+  {"id": "router-chitchat-4", "turns": [{"user": "ok em, để anh xem đã"}], "expect": {"intent": "chitchat"}, "note": "router/chitchat ngắn"},
+  {"id": "router-chitchat-5", "turns": [{"user": "hi ban"}], "expect": {"intent": "chitchat"}, "note": "router/chitchat không dấu"},
+
+  {"id": "router-oos-1", "turns": [{"user": "cho mình hỏi giá vàng hôm nay bao nhiêu?"}], "expect": {"intent": "out_of_scope"}, "note": "router/out_of_scope"},
+  {"id": "router-oos-2", "turns": [{"user": "bạn tư vấn giúp mình mua điện thoại nào tốt với"}], "expect": {"intent": "out_of_scope"}, "note": "router/oos điện thoại"},
+  {"id": "router-oos-3", "turns": [{"user": "thời tiết Hà Nội mai thế nào nhỉ?"}], "expect": {"intent": "out_of_scope"}, "note": "router/oos thời tiết"},
+  {"id": "router-oos-4", "turns": [{"user": "ke cho minh mot cau chuyen cuoi di"}], "expect": {"intent": "out_of_scope"}, "note": "router/oos không dấu"},
+
+  {"id": "router-nodiac-1", "turns": [{"user": "xe chay tot khong shop oi"}], "expect": {"escalated": false}, "note": "TIP-004: chay(chạy) không dấu KHÔNG được nhầm cháy→emergency"},
+  {"id": "router-nodiac-2", "turns": [{"user": "dang di tren duong thi xe hoi rung"}], "expect": {"escalated": false}, "note": "TIP-004: dang(đang) không dấu, không phải khẩn cấp"},
+  {"id": "router-nodiac-3", "turns": [{"user": "may gio shop mo cua ngay mai vay"}], "expect": {"intent": "faq", "escalated": false}, "note": "TIP-004: ngay(ngày) không dấu → hỏi giờ mở cửa"},
+  {"id": "router-nodiac-4", "turns": [{"user": "di tren cao toc co mat phi khong"}], "expect": {"escalated": false}, "note": "TIP-004: cao tốc nhưng chỉ hỏi phí, không khẩn cấp"},
+  {"id": "router-nodiac-5", "turns": [{"user": "xe minh chay hoi yeu, can kiem tra gi khong"}], "expect": {"escalated": false}, "note": "TIP-004: chay(chạy) yếu — hỏi tư vấn, không cháy"}
+]
