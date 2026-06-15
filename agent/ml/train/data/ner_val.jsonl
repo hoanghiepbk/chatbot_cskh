@@ -1,0 +1,14 @@
+{"text": "Shop ơi, e muốn đặt bộ piston cho exciter 150, gửi thông tin sản phẩm về email tranminh2024@outlook.com dc ko ạ", "entities": [{"type": "EMAIL", "start": 79, "end": 103, "value": "tranminh2024@outlook.com"}], "style": "mixed", "source": "synth"}
+{"text": "Chị ơi hóa đơn gửi về email nào ạ? chị gửi về nguyenthuphuong2k1@gmail.com giúp em nha", "entities": [{"type": "EMAIL", "start": 46, "end": 74, "value": "nguyenthuphuong2k1@gmail.com"}], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "em book lich sua chua ngay mai duoc khong a, cccd cua em la 079123456789, xe air blade bi ho ga", "entities": [{"type": "ID", "start": 60, "end": 72, "value": "079123456789"}], "style": "mixed", "source": "synth"}
+{"text": "dat hen sua xe winner vao thu 6 tuan sau nha, so cccd 034567812345 ten Nguyen Van Hai day", "entities": [{"type": "ID", "start": 54, "end": 66, "value": "034567812345"}], "style": "mixed", "source": "synth"}
+{"text": "Bơm lốp xe vision bao nhiêu tiền 1 lần vậy shop? Em thấy lốp hơi non quá rồi", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Xe đã chạy được 45000km rồi anh ơi, lần bảo dưỡng trước chi phí khoảng 1.200.000đ", "entities": [], "style": "mixed", "source": "synth", "judge": "parse_failed"}
+{"text": "Xe tôi bị rung lắc khi chạy trên 80km/h, đã đi 18500km chưa cân bằng động lần nào. Phí dịch vụ khoảng 200k phải ko a?", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Thay dầu nhớt synthetic cho sh350i hết khoảng 750000 đồng đúng không shop? Xe mới chạy được 5000km thôi á", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "shop ơi cho e hỏi thay má phanh trước và sau hết khoảng 450.000đ phải ko ạ? xe e là wave alpha đời cũ đi được 50000 km rồi", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Xe đã chạy được 45000 km rồi, cần kiểm tra phanh và lốp", "entities": [], "style": "mixed", "source": "synth"}
+{"text": "Chao shop, muon dat lich thay banh xe, di dc 22000km r, sn em +84912888999 nha ad chat zalo cho em dc k a", "entities": [{"type": "PHONE", "start": 62, "end": 74, "value": "+84912888999"}], "style": "mixed", "source": "synth"}
+{"text": "Anh ơi em cần đặt lịch rửa xe gấp, xe đi 8000km chưa vệ sinh lần nào. Gọi em 0901.234.567 để book slot nhé", "entities": [{"type": "PHONE", "start": 77, "end": 89, "value": "0901.234.567"}], "style": "mixed", "source": "synth"}
+{"text": "60A-111.22 mai đến sửa phanh được không ad ơi", "entities": [{"type": "PLATE", "start": 0, "end": 10, "value": "60A-111.22"}], "style": "mixed", "source": "synth"}
+{"text": "92C-567.89 cần độ âm thanh, tư vấn giúp em vs", "entities": [{"type": "PLATE", "start": 0, "end": 10, "value": "92C-567.89"}], "style": "mixed", "source": "synth"}

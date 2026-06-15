@@ -1,0 +1,19 @@
+{"text": "book lich sua xe airblade dc k ad oi, xe e thay may cai phu tung, muon hen truoc cho chac chan co tho lam", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "Anh cho em đặt lịch kiểm tra định kỳ cho xe City, em muốn hẹn ngày 20 tháng này buổi chiều từ 2-3h, không biết shop còn chỗ không ạ?", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "Cảm ơn ad đã trả lời nhanh vậy ạ, rất hài lòng luôn", "label": "chitchat", "style": "chuan", "source": "synth", "judge": "parse_failed"}
+{"text": "à à chào chào bạn nhé hôm nay trời đẹp nhỉ mình muốn hỏi", "label": "chitchat", "style": "asr_noise", "source": "synth", "judge": "parse_failed"}
+{"text": "xin chao admin nha, minh dang can tu van", "label": "chitchat", "style": "khong_dau", "source": "synth", "judge": "parse_failed"}
+{"text": "may chua xong roi ma den gio van bi tat may luc chay duong, goi dien thoai mai khong ai nghe may. dich vu the nay ma con dam nhan tien a 😤", "label": "complaint", "style": "emoji", "source": "synth"}
+{"text": "trc do thay dầu xong h xe nó keu ren ren, goi len hoi thi noi phai chay them 100km cho no on dinh, ma chay roi van keu the nay, k chịu trách nhiệm à 🤬", "label": "complaint", "style": "teencode", "source": "synth"}
+{"text": "Sửa xong 2 hôm phanh vẫn kêu két két, em mang lại còn bảo bình thường, thái độ nhân viên kiểu gì vậy??? Tôi trả tiền không phải để nghe câu 'anh chạy thử thêm xem' đâu nhé!", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "oi gioi oi xe em chết máy ngay giữa cầu Bình Triệu rồi ạ các xe phía sau nó bấm còi inh ỏi em sợ quá ko biết lam sao bây giờ", "label": "emergency", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Khẩn cấp!!! Xe tôi mất phanh hoàn toàn trên đèo Bảo Lộc, đang phải dùng phanh tay xuống dốc. Rất nguy hiểm, cần hỗ trợ ngay lập tức!", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "Muốn hỏi về quy định thay the phu kiện xe ạ. Nếu lắp xong mà phát hiện phu tùng bị loix thì được xử lý ra sao? Co đổi mới hay hoàn tiền hem? 🛠️", "label": "faq", "style": "emoji", "source": "synth"}
+{"text": "cho em cho em đổi lịch với ạ lịch hẹn lúc lúc 10 giờ sáng mai đổi sang chiều chiều được không shop ơi", "label": "modify_booking", "style": "asr_noise", "source": "synth"}
+{"text": "Em đat lich rua xe + thay nhot ngay 20 roi ma bay gio em phai di cong tac gap, co the huy va hen lai vao dau thang sau dc ko a?", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "đơn mã ĐH553421 trang thai nhu nao roi a? em dat loc gio va dau nhot ma chua thay cap nhat", "label": "order_lookup", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Anh cho em xem lại trạng thái đơn hàng số ĐH667788 được không ạ? Em đặt bộ lọc gió và bugi cho SH, giờ muốn biết khi nào về để sắp xếp lịch 🙏", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "e qên mất mã don roi nhung e nho e dat ngay 20 thang truoc day á, dat day cu va gương cho exciter, giup e tim lai vs xem no den dau roi", "label": "order_lookup", "style": "khong_dau_phan", "source": "synth"}
+{"text": "thoi tiet mai co mua khong nhi hay minh di choi dc ko", "label": "out_of_scope", "style": "khong_dau", "source": "synth"}
+{"text": "kể cho t nghe chuỵên cười đii buồn quáaa", "label": "out_of_scope", "style": "teencode", "source": "synth"}
+{"text": "cho hỏi cái garage Hoàng Long bên đường Láng với cái garage Honda Đầu của bạn, cái nào uy tín hơn á", "label": "out_of_scope", "style": "sai_chinh_ta", "source": "synth"}

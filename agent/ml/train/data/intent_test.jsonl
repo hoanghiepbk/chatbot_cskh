@@ -1,0 +1,19 @@
+{"text": "Em muốn đặt lịch bảo dưỡng xe SH 350i vào thứ 7 tuần sau được không ạ? Khoảng 9-10h sáng", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "em cần đặt lịch thay lốp xe Air Blade gấp, lốp sau sắp hết gai rồi ạ 😢 tuần này có slot nào không?", "label": "booking", "style": "emoji", "source": "synth"}
+{"text": "chao shop, cho mk hoi chut dc k", "label": "chitchat", "style": "teencode", "source": "synth", "judge": "parse_failed"}
+{"text": "k sao dau, cam on nha", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "cam on shop nhieu nha, lan sau minh se quay lai", "label": "chitchat", "style": "khong_dau", "source": "synth", "judge": "parse_failed"}
+{"text": "Anh đem xe đến sửa đèn pha hôm qua mà hôm nay bật lên chỉ sáng một bên thôi, gọi điện thì cứ hẹn mai kia, vậy mà tính tiền công đầy đủ. Làm ăn kiểu này không uy tín tí nào!", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "Hôm kia thay lốc máy mà bây h xe nó rung rung lúc khởi đôngg, nhân viên cứ đổ lỗi do xe cũ chứ k phải do thay sai. Mình trả 3 triệu mà dc phục vụ kiểu nàyy à???", "label": "complaint", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "Thay nhớt xong nhưng thấy xe mùi cháy khét lắm, mình gọi hỏi 3 lần rồi mà không ai nghe máy. Dịch vụ sau bán hàng tệ quá, có nhận tiền lúc đầu thôi chứ giải quyết vấn đề thì chẳng ai quan tâm 😒", "label": "complaint", "style": "emoji", "source": "synth"}
+{"text": "HELP!!! Xe em bốc cháy ở km15 cao tốc Hà Nội - Hải Phòng, khói mù mịt luôn! Cần cứu hộ gấp lắm ạ, em đang hoảng loạn quá 😱😱😱", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "tai nan a oi xe e va chạm voi xe tai o nga tu Tran Duy Hung co nguoi bi thuong roi anh den cuu ho gap voi", "label": "emergency", "style": "khong_dau", "source": "synth"}
+{"text": "Mình muốn hỏi quy trình cứu hộ của bên XeCare như thế nào? Từ lúc gọi đến khi xe được lai đi mất bao lâu ạ?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "đổi lịch hẹn đổi lịch hẹn giúp tôi với lịch ngày mai tôi đổi sang thứ tư được không á", "label": "modify_booking", "style": "asr_noise", "source": "synth"}
+{"text": "Cho e hỏi e đặt lịch bảo dưỡng xe ngày 15 này rồi nhưng bây giờ e bận đột xuất, có thể đổi sang ngày 17 được không ạ?", "label": "modify_booking", "style": "chuan", "source": "synth"}
+{"text": "Cho em hỏi đơn hàng ĐH2024112345 của em đã giao chưa ạ? Em đặt từ hôm thứ 2 tuần trước mà chưa thấy shipper liên hệ gì cả", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "cho mình mình xem xem trạng trạng thái đơn phụ tùng tùng xe máy mã DH DH 3392 nó đang đang chạy chưa ạ", "label": "order_lookup", "style": "asr_noise", "source": "synth", "judge": "parse_failed"}
+{"text": "ad ơi cho e tra cứu đơn đặt bộ lốp xe sh mã số XC9823 vs ạ, e cần gấp lắm", "label": "order_lookup", "style": "teencode", "source": "synth", "judge": "parse_failed"}
+{"text": "Bên anh có tư vấn thủ tục kiện ra tòa án không ạ? Em bị đối tác lừa đảo hợp đồng, muốn nhờ luật sư hướng dẫn cách khởi kiện.", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "Cho mình hỏi giá vàng SJC hôm nay bao nhiêu 1 chỉ vậy ạ?", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "Cho em hỏi giá vàng SJC hôm nay bao nhiêu vậy ạ? Em muốn mua vàng nhẫn tròn trơn nè.", "label": "out_of_scope", "style": "chuan", "source": "synth"}
