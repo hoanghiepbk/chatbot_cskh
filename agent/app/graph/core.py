@@ -18,8 +18,6 @@ from app.guardrails.pipeline import run_guardrail_in
 from app.llm import MODEL_HAIKU, MODEL_SONNET, LLMClient
 
 HOTLINE = "1900 1234"
-# TODO: move threshold to policy_registry (TIP-007 reads it as policy data)
-INJECTION_THRESHOLD = 0.5
 
 INTENTS = [
     "faq",
@@ -102,6 +100,11 @@ class AgentState(TypedDict, total=False):
     router_failed: bool
     reply_branch: str  # 'faq'|'chitchat'|'action' get the output rubric; 'template' skips it
     emergency_session: dict  # {'open': bool, 'asks': int} — persisted by the API layer
+    # TIP-008 HITL plumbing
+    escalate_reason: str  # set by a node to route into the escalate node with a reason
+    escalate_severity: str  # 'normal' | 'high' — drives ticket priority
+    complaint_attempted: bool  # REQ-09: one self-serve attempt before escalating
+    handback_note: str  # staff resolve summary, injected into the next agent turn
 
 
 @dataclass
@@ -114,6 +117,7 @@ class GraphDeps:
     search: Callable[..., Awaitable[list]]  # search_kb-compatible
     trace: Callable[..., Awaitable[None]]  # log_trace-compatible
     tools: Any = None  # ToolKit (TIP-006) — fakes/spies in tests
+    supabase: Any = None  # service-role client (TIP-008) — handoff reads messages/trace
     extra: dict = field(default_factory=dict)
 
 
@@ -129,6 +133,17 @@ def extract_json_object(text: str) -> dict | None:
             return json.loads(match.group(0))
         except json.JSONDecodeError:
             return None
+
+
+def system_with_note(base: str, state: AgentState) -> str:
+    """Prepend the staff hand-back note (TIP-008 resolve) to the system prompt so
+    the agent answers the next turn with context from the human segment."""
+    note = state.get("handback_note")
+    if not note:
+        return base
+    return (
+        f"{base}\n\n[GHI CHÚ BÀN GIAO TỪ NHÂN VIÊN — dùng để trả lời tiếp có ngữ cảnh]:\n{note}"
+    )
 
 
 def parse_router_json(text: str) -> tuple[str, float] | None:
@@ -147,6 +162,8 @@ def parse_router_json(text: str) -> tuple[str, float] | None:
 
 def build_graph(deps: GraphDeps):
     threshold = float(deps.policy.get("escalate_confidence_below", 0.7))
+    # TIP-008: threshold now lives in policy_registry (was a TIP-005 hardcode)
+    injection_threshold = float(deps.policy.get("injection_threshold", 0.5))
 
     async def trace(state: AgentState, step_type: str, payload: dict, **kw) -> None:
         await deps.trace(
@@ -238,7 +255,7 @@ def build_graph(deps: GraphDeps):
             state,
             "faq_answer",
             model=MODEL_SONNET,
-            system=deps.system_prompt + FAQ_ANSWER_INSTRUCTIONS,
+            system=system_with_note(deps.system_prompt, state) + FAQ_ANSWER_INSTRUCTIONS,
             messages=[
                 {
                     "role": "user",
@@ -297,19 +314,11 @@ def build_graph(deps: GraphDeps):
             state,
             "chitchat",
             model=MODEL_HAIKU,
-            system=CHITCHAT_SYSTEM,
+            system=system_with_note(CHITCHAT_SYSTEM, state),
             messages=history + [{"role": "user", "content": state["masked_text"]}],
             max_tokens=300,
         )
         return {"reply": result.text, "reply_branch": "chitchat"}
-
-    async def escalate_stub(state: AgentState) -> dict:
-        await trace(
-            state,
-            "escalation",
-            {"reason": "low_confidence", "confidence": state.get("confidence")},
-        )
-        return {"reply": REPLY_ESCALATE, "escalated": True}
 
     async def injection_refuse(state: AgentState) -> dict:
         await trace(
@@ -321,9 +330,6 @@ def build_graph(deps: GraphDeps):
             },
         )
         return {"reply": REPLY_INJECTION, "escalated": False}
-
-    async def complaint_stub(state: AgentState) -> dict:
-        return {"reply": REPLY_COMPLAINT_STUB}
 
     async def out_of_scope(state: AgentState) -> dict:
         return {"reply": REPLY_OUT_OF_SCOPE}
@@ -364,7 +370,23 @@ def build_graph(deps: GraphDeps):
         )
         updates: dict = {"reply": result.final_text}
         if result.fallback:
-            await trace(state, "escalation", {"reason": "guardrail_block"})
+            # TIP-008: a blocked reply means the agent went off the rails → make a
+            # real staff ticket (kept here rather than routed to the escalate node:
+            # guardrail_out is the terminal node, see report DEVIATIONS).
+            from app.graph.escalate import open_escalation_ticket
+
+            ticket, in_hours = await open_escalation_ticket(
+                deps, state, "guardrail_block", "normal"
+            )
+            await trace(
+                state,
+                "escalation",
+                {
+                    "reason": "guardrail_block",
+                    "ticket_id": ticket["id"] if ticket else None,
+                    "after_hours": not in_hours,
+                },
+            )
             updates["escalated"] = True
         return updates
 
@@ -374,7 +396,7 @@ def build_graph(deps: GraphDeps):
         # TIP-007: an open emergency outranks everything — the customer is mid-rescue
         if (state.get("emergency_session") or {}).get("open"):
             return "emergency"
-        if state["guardrail_flags"]["injection_score"] >= INJECTION_THRESHOLD:
+        if state["guardrail_flags"]["injection_score"] >= injection_threshold:
             return "injection_refuse"
         # TIP-006: an in-flight action (choosing a slot / awaiting confirm) continues
         # in the action node — router would misread bare replies like "2"
@@ -384,24 +406,30 @@ def build_graph(deps: GraphDeps):
 
     def route_after_router(state: AgentState) -> str:
         if state.get("router_failed"):
-            return "escalate_stub"  # TIP-006 chore: parse failure goes to a human
+            return "escalate"  # TIP-006 chore: parse failure goes to a human
         if state["intent"] == "emergency":
             return "emergency"
         if state["confidence"] < threshold:
-            return "escalate_stub"
+            return "escalate"
         return {
             "faq": "faq",
             "chitchat": "chitchat",
             "booking": "action",
             "order_lookup": "action",
             "modify_booking": "action",
-            "complaint": "complaint_stub",
+            "complaint": "complaint",
             "out_of_scope": "out_of_scope",
         }[state["intent"]]
 
+    def route_after_complaint(state: AgentState) -> str:
+        # complaint node decided to escalate (2nd complaint / high severity)
+        return "escalate" if state.get("escalate_reason") else "guardrail_out"
+
     # deferred imports: these modules import constants from this module
     from app.graph.action import build_action_node
+    from app.graph.complaint import build_complaint_node
     from app.graph.emergency import build_emergency_node
+    from app.graph.escalate import build_escalate_node
 
     graph = StateGraph(AgentState)
     graph.add_node("guardrail_in", guardrail_in)
@@ -409,24 +437,24 @@ def build_graph(deps: GraphDeps):
     graph.add_node("faq", faq)
     graph.add_node("chitchat", chitchat)
     graph.add_node("emergency", build_emergency_node(deps))
-    graph.add_node("escalate_stub", escalate_stub)
+    graph.add_node("escalate", build_escalate_node(deps))
     graph.add_node("injection_refuse", injection_refuse)
     graph.add_node("action", build_action_node(deps))
-    graph.add_node("complaint_stub", complaint_stub)
+    graph.add_node("complaint", build_complaint_node(deps))
     graph.add_node("out_of_scope", out_of_scope)
     graph.add_node("guardrail_out", guardrail_out)
 
     graph.set_entry_point("guardrail_in")
     graph.add_conditional_edges("guardrail_in", route_after_guardrail)
     graph.add_conditional_edges("router", route_after_router)
+    graph.add_conditional_edges("complaint", route_after_complaint)
     for node in [
         "faq",
         "chitchat",
         "emergency",
-        "escalate_stub",
+        "escalate",
         "injection_refuse",
         "action",
-        "complaint_stub",
         "out_of_scope",
     ]:
         graph.add_edge(node, "guardrail_out")

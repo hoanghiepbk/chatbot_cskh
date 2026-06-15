@@ -401,7 +401,24 @@ def build_action_node(deps):
                     "refused": "PAID_ORDER_ESCALATE",
                 },
             )
-            await trace(state, "escalation", {"reason": "paid_order_cancel", "order_id": order["id"]})
+            # TIP-008: a paid-order cancel needs a 1-business-day CSKH callback —
+            # create a real staff ticket but keep the bespoke KB-06 reply (kept
+            # here instead of routing through the escalate node, see report).
+            from app.graph.escalate import open_escalation_ticket
+
+            ticket, in_hours = await open_escalation_ticket(
+                deps, state, "paid_order_cancel", "normal"
+            )
+            await trace(
+                state,
+                "escalation",
+                {
+                    "reason": "paid_order_cancel",
+                    "order_id": order["id"],
+                    "ticket_id": ticket["id"] if ticket else None,
+                    "after_hours": not in_hours,
+                },
+            )
             return {
                 "reply": REPLY_PAID_ORDER,
                 "escalated": True,

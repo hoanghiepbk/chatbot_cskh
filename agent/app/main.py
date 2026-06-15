@@ -56,8 +56,11 @@ async def lifespan(app: FastAPI):
     tools = build_tools(client)
     app.state.tools = tools
 
+    llm = AnthropicClient()
+    app.state.llm = llm  # [TIP-008] staff API reuses it for resolve summaries
+
     deps = GraphDeps(
-        llm=AnthropicClient(),
+        llm=llm,
         system_prompt=prompt_row["content"],
         prompt_version=prompt_row["version"],
         policy=policy_row["rules"],
@@ -65,6 +68,7 @@ async def lifespan(app: FastAPI):
         search=retrieval.search_kb,
         trace=log_trace,
         tools=tools,
+        supabase=client,  # [TIP-008] handoff package reads messages/trace
     )
     app.state.chat_graph = build_graph(deps)
     yield

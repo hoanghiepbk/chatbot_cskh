@@ -3,8 +3,6 @@
 import pytest
 
 from app.graph.core import (
-    REPLY_COMPLAINT_STUB,
-    REPLY_ESCALATE,
     REPLY_INJECTION,
     REPLY_NOT_FOUND_PREFIX,
     REPLY_OUT_OF_SCOPE,
@@ -12,8 +10,11 @@ from app.graph.core import (
     build_graph,
 )
 from app.graph.emergency import REPLY_EMERGENCY_STEP1
+from app.graph.escalate import REPLY_AFTER_HOURS, REPLY_IN_HOURS
 from app.guardrails.pii import PIISession
 from app.llm import LLMResult
+
+HANDOFF_JSON = '{"summary": "khách cần hỗ trợ", "suggested_action": "gọi lại khách"}'
 
 
 class FakeLLM:
@@ -99,18 +100,22 @@ def test_extract_json_tolerates_surrounding_prose():
 # ---------- router parse failure ----------
 
 @pytest.mark.anyio
-async def test_router_broken_json_retry_then_escalate():
-    llm = FakeLLM(["not json at all", "{ broken"])
+async def test_router_broken_json_retry_then_escalate(monkeypatch):
+    import app.graph.escalate as esc
+
+    monkeypatch.setattr(esc, "is_business_hours", lambda *a: True)
+    # router (broken ×2) → escalate node → handoff summary call
+    llm = FakeLLM(["not json at all", "{ broken", HANDOFF_JSON])
     deps, traces = make_deps(llm)
     final = await run(build_graph(deps), base_state("hỏi linh tinh gì đó"))
     assert final["intent"] == "out_of_scope"
     assert final["confidence"] == 0.0
-    # TIP-006 chore: parse failure escalates to a human instead of out_of_scope
-    assert final["reply"] == REPLY_ESCALATE
+    # TIP-006 chore + TIP-008: parse failure escalates via the real escalate node
+    assert final["reply"] == REPLY_IN_HOURS
     assert final["escalated"] is True
-    assert len(llm.calls) == 2  # original + 1 retry, no more
-    router_traces = [t for t in traces if t["step_type"] == "router"]
-    assert router_traces[0]["payload"]["intent"] == "out_of_scope"
+    assert len(llm.calls) == 3  # router original + retry + handoff summary
+    esc_trace = next(t for t in traces if t["step_type"] == "escalation")
+    assert esc_trace["payload"]["reason"] == "parse_fail"
 
 
 # ---------- injection blocks router ----------
@@ -133,14 +138,18 @@ async def test_injection_skips_router():
 # ---------- low confidence escalates ----------
 
 @pytest.mark.anyio
-async def test_low_confidence_escalates():
-    llm = FakeLLM(['{"intent": "faq", "confidence": 0.5}'])
+async def test_low_confidence_escalates(monkeypatch):
+    import app.graph.escalate as esc
+
+    monkeypatch.setattr(esc, "is_business_hours", lambda *a: False)  # after hours
+    llm = FakeLLM(['{"intent": "faq", "confidence": 0.5}', HANDOFF_JSON])
     deps, traces = make_deps(llm)
     final = await run(build_graph(deps), base_state("xe kêu cạch cạch"))
-    assert final["reply"] == REPLY_ESCALATE
+    assert final["reply"] == REPLY_AFTER_HOURS  # after-hours never says "joins now"
     assert final["escalated"] is True
-    esc = next(t for t in traces if t["step_type"] == "escalation")
-    assert esc["payload"]["reason"] == "low_confidence"
+    esc_trace = next(t for t in traces if t["step_type"] == "escalation")
+    assert esc_trace["payload"]["reason"] == "low_confidence"
+    assert esc_trace["payload"]["after_hours"] is True
 
 
 # ---------- faq groundedness false ----------
@@ -199,9 +208,8 @@ async def test_faq_grounded_with_citations():
 @pytest.mark.parametrize(
     "intent,expected_reply",
     [
-        # booking/order_lookup/modify_booking now reach the real action node —
-        # covered in test_action.py (TIP-006)
-        ("complaint", REPLY_COMPLAINT_STUB),
+        # booking/order_lookup/modify_booking → action node (test_action.py)
+        # complaint → complaint node (test_complaint.py)
         ("out_of_scope", REPLY_OUT_OF_SCOPE),
         ("emergency", REPLY_EMERGENCY_STEP1),
     ],
@@ -260,6 +268,19 @@ async def test_reply_placeholder_unmasked():
     # masked text sent to LLM, placeholder unmasked at API layer
     assert "[PHONE_1]" in final["masked_text"]
     assert session.unmask(final["reply"]) == "Mình sẽ gọi lại số 0901234567 ạ!"
+
+
+# ---------- handback note (TIP-008) injected into the next agent turn ----------
+
+@pytest.mark.anyio
+async def test_handback_note_reaches_system_prompt():
+    llm = FakeLLM(['{"intent": "chitchat", "confidence": 0.9}', "Dạ vâng ạ!", "{}"])
+    deps, _ = make_deps(llm)
+    state = base_state("vậy giờ mình cần làm gì tiếp?")
+    state["handback_note"] = "Nhân viên đã hẹn khách mang xe lại sáng mai."
+    await run(build_graph(deps), state)
+    chitchat_call = next(c for c in llm.calls if "tư vấn viên thân thiện" in c["system"])
+    assert "Nhân viên đã hẹn khách mang xe lại sáng mai." in chitchat_call["system"]
 
 
 # ---------- versions attached to every trace ----------
