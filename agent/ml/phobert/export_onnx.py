@@ -53,6 +53,9 @@ def main() -> int:
         dynamic_axes={"input_ids": {0: "b", 1: "t"}, "attention_mask": {0: "b", 1: "t"},
                       "intent": {0: "b"}, "injection": {0: "b"}, "ner": {0: "b", 1: "t"}},
         opset_version=14,
+        dynamo=False,  # torch>=2.9 defaults to the dynamo exporter (needs onnxscript and
+                       # renames I/O); keep the legacy TorchScript exporter so the named
+                       # inputs/outputs + dynamic_axes contract infer.py relies on hold.
     )
     int8 = OUT / "phobert.int8.onnx"
     quantize_dynamic(str(fp32), str(int8), weight_type=QuantType.QInt8)
