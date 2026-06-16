@@ -1,19 +1,19 @@
 {
   "intent": {
-    "faq": 1.6389,
-    "booking": 1.0536,
-    "order_lookup": 0.8676,
-    "modify_booking": 1.475,
-    "emergency": 1.0536,
-    "complaint": 0.7763,
-    "chitchat": 0.8676,
-    "out_of_scope": 0.8194
+    "faq": 0.9602,
+    "booking": 0.9769,
+    "order_lookup": 0.8711,
+    "modify_booking": 1.1342,
+    "emergency": 0.9883,
+    "complaint": 1.1118,
+    "chitchat": 1.0305,
+    "out_of_scope": 0.9769
   },
   "ner_stratum": {
-    "PHONE": 1.4545,
-    "NONE": 0.4211,
-    "PLATE": 1.4545,
-    "ID": 1.6,
-    "EMAIL": 1.6
+    "PHONE": 1.5228,
+    "NONE": 0.4123,
+    "PLATE": 1.6362,
+    "ID": 1.5856,
+    "EMAIL": 1.4788
   }
 }

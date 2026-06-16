@@ -1,19 +1,203 @@
-{"text": "Em muốn đặt lịch bảo dưỡng xe SH 350i vào thứ 7 tuần sau được không ạ? Khoảng 9-10h sáng", "label": "booking", "style": "chuan", "source": "synth"}
-{"text": "em cần đặt lịch thay lốp xe Air Blade gấp, lốp sau sắp hết gai rồi ạ 😢 tuần này có slot nào không?", "label": "booking", "style": "emoji", "source": "synth"}
-{"text": "chao shop, cho mk hoi chut dc k", "label": "chitchat", "style": "teencode", "source": "synth", "judge": "parse_failed"}
-{"text": "k sao dau, cam on nha", "label": "chitchat", "style": "teencode", "source": "synth"}
-{"text": "cam on shop nhieu nha, lan sau minh se quay lai", "label": "chitchat", "style": "khong_dau", "source": "synth", "judge": "parse_failed"}
-{"text": "Anh đem xe đến sửa đèn pha hôm qua mà hôm nay bật lên chỉ sáng một bên thôi, gọi điện thì cứ hẹn mai kia, vậy mà tính tiền công đầy đủ. Làm ăn kiểu này không uy tín tí nào!", "label": "complaint", "style": "chuan", "source": "synth"}
-{"text": "Hôm kia thay lốc máy mà bây h xe nó rung rung lúc khởi đôngg, nhân viên cứ đổ lỗi do xe cũ chứ k phải do thay sai. Mình trả 3 triệu mà dc phục vụ kiểu nàyy à???", "label": "complaint", "style": "sai_chinh_ta", "source": "synth"}
-{"text": "Thay nhớt xong nhưng thấy xe mùi cháy khét lắm, mình gọi hỏi 3 lần rồi mà không ai nghe máy. Dịch vụ sau bán hàng tệ quá, có nhận tiền lúc đầu thôi chứ giải quyết vấn đề thì chẳng ai quan tâm 😒", "label": "complaint", "style": "emoji", "source": "synth"}
-{"text": "HELP!!! Xe em bốc cháy ở km15 cao tốc Hà Nội - Hải Phòng, khói mù mịt luôn! Cần cứu hộ gấp lắm ạ, em đang hoảng loạn quá 😱😱😱", "label": "emergency", "style": "chuan", "source": "synth"}
-{"text": "tai nan a oi xe e va chạm voi xe tai o nga tu Tran Duy Hung co nguoi bi thuong roi anh den cuu ho gap voi", "label": "emergency", "style": "khong_dau", "source": "synth"}
-{"text": "Mình muốn hỏi quy trình cứu hộ của bên XeCare như thế nào? Từ lúc gọi đến khi xe được lai đi mất bao lâu ạ?", "label": "faq", "style": "chuan", "source": "synth"}
-{"text": "đổi lịch hẹn đổi lịch hẹn giúp tôi với lịch ngày mai tôi đổi sang thứ tư được không á", "label": "modify_booking", "style": "asr_noise", "source": "synth"}
-{"text": "Cho e hỏi e đặt lịch bảo dưỡng xe ngày 15 này rồi nhưng bây giờ e bận đột xuất, có thể đổi sang ngày 17 được không ạ?", "label": "modify_booking", "style": "chuan", "source": "synth"}
-{"text": "Cho em hỏi đơn hàng ĐH2024112345 của em đã giao chưa ạ? Em đặt từ hôm thứ 2 tuần trước mà chưa thấy shipper liên hệ gì cả", "label": "order_lookup", "style": "chuan", "source": "synth"}
-{"text": "cho mình mình xem xem trạng trạng thái đơn phụ tùng tùng xe máy mã DH DH 3392 nó đang đang chạy chưa ạ", "label": "order_lookup", "style": "asr_noise", "source": "synth", "judge": "parse_failed"}
-{"text": "ad ơi cho e tra cứu đơn đặt bộ lốp xe sh mã số XC9823 vs ạ, e cần gấp lắm", "label": "order_lookup", "style": "teencode", "source": "synth", "judge": "parse_failed"}
-{"text": "Bên anh có tư vấn thủ tục kiện ra tòa án không ạ? Em bị đối tác lừa đảo hợp đồng, muốn nhờ luật sư hướng dẫn cách khởi kiện.", "label": "out_of_scope", "style": "chuan", "source": "synth"}
-{"text": "Cho mình hỏi giá vàng SJC hôm nay bao nhiêu 1 chỉ vậy ạ?", "label": "out_of_scope", "style": "chuan", "source": "synth"}
-{"text": "Cho em hỏi giá vàng SJC hôm nay bao nhiêu vậy ạ? Em muốn mua vàng nhẫn tròn trơn nè.", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "minh muon hen lich thay lop xe winner cho cuoi tuan nay duoc khong b oi co slot nao sang som k", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "Cho em hỏi bên anh có nhận đặt lịch sửa xe không ạ? Em muốn book lịch kiểm tra phanh và thay nhớt cho xe SH vào thứ 7 tuần sau được không?", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "Chào shop, em muốn đặt lịch bảo dưỡng xe Wave cho tuần sau được không ạ? Khoảng chiều thứ 5 hoặc thứ 6 gì đó", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "cho minh dat lich thay dau may cho xe vinfast vf8 duoc khong nhi can gap lam", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "book lich bao duong xe morning nhe, thay dau may + loc gio, sang t7 tuan sau dc ko a 🚗", "label": "booking", "style": "emoji", "source": "synth"}
+{"text": "a muon dat lich sua xe o to vao sang thu 2 tuan nay duoc khong, xe a bi roi gi do o phanh", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "Anh ơi e cần book lịch sửa xe SH mode, xe đang bị hơi khó nổ buổi sáng. E muốn mang xe vào khoảng 2-3h chiều thứ 6 này dc k ạ? 🙏", "label": "booking", "style": "emoji", "source": "synth"}
+{"text": "mình mún đặcc lịxx sửa xe máyy ý, khoảngg tầm cuốii tuần này, cóó chổỗ trốngg k ạaa?", "label": "booking", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "cho em hoi em muon dat lich sua chua tong quat cho xe sirius bao gio co cho trong nhat anh? xe em hoi bi yeu nhieu cho nen can kiem tra ky", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "Em cần đặt lich sua xe wave alpha cua em, xe dang bi van de may no khong on, anh cho em hen lich duoc khong a?", "label": "booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "cho toi dat hen bao duong xe o to camry 30000km, toi muon lam vao sang chu nhat tuan nay, khoang 8-9 gio sang", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "Chào shop, em muốn đặt lịch bảo dưỡng xe Lead 2020 vào chiều thứ 7 tuần sau được không ạ?", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "shop ơi e muốn đặt lịch check tổng thể xe future, có thể đặt trước cho t7 này k ạ 🙏", "label": "booking", "style": "emoji", "source": "synth"}
+{"text": "Chào shop, em muốn đặt lịch bảo dưỡng xe Wave cho cuối tuần này được không ạ? Khoảng thứ 7 hoặc chủ nhật gì đó", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "Cô ơi cho cháu đặt lịch bảo dưỡng định kỳ xe AB với thay dầu phanh nhé, khoảng tuần sau cháu rảnh ạ 😊", "label": "booking", "style": "emoji", "source": "synth"}
+{"text": "e mún book lịch sua xe vision cho ngayyy 15 thag nay á, chay xa hoi nhiu can kiem chra toàn dieenj luon", "label": "booking", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "em cần book lịch cho xe Vios làm bảo dưỡng 10k km vào thứ 5 tuần này dc k ạ", "label": "booking", "style": "teencode", "source": "synth"}
+{"text": "em em muốn muốn đặt lịch bảo dưỡng xe ô tô vào ngày mai ngày mai khoảng 8 giờ sáng được không ạ anh", "label": "booking", "style": "asr_noise", "source": "synth"}
+{"text": "cho toi hen lich bao duong dinh ki xe exciter ngay 15 thang nay duoc khong toi muon thay nhot va kiem tra dich phanh", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "dang can dat lich sua xe exciter bi rung may cho ngay 15 thang nay duoc khong a, chay xa hoi bi rung", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "cho minh dat hen bao duong xe future fi duoc khong a, dang can gap lam vi sap di xa", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "book cho t slot sua chua tong quat xe lead ngay 15 thang nay dc hem, khoang 3h chieu, t can thay may thu linh kien", "label": "booking", "style": "teencode", "source": "synth"}
+{"text": "cho minh dat lich sua xe vao sang thu 2 nhe, xe lead dang bi rung may, muon mang vao kiem tra", "label": "booking", "style": "khong_dau", "source": "synth"}
+{"text": "Chào shop, em muốn đặt lịch bảo dưỡng xe SH 150i cho thứ 7 tuần này được không ạ? Khoảng 9h sáng", "label": "booking", "style": "chuan", "source": "synth"}
+{"text": "a ơi e muốn đặt lịch thay nhớt cho xe ô tô Vios, khoang chiều thứ 4 tuần nay có slot nào k ạ?", "label": "booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "k bít đặt lịch chăm sóc xe Exciter trước dc k ah, tầm 10h sáng chủ nhật nì, e vs mấy thằng bạn đi phượt xong cần vệ sinh toàn bộ", "label": "booking", "style": "teencode", "source": "synth"}
+{"text": "À mà này này bên bên đó có có làm việc việc thứ bảy không không nhỉ", "label": "chitchat", "style": "asr_noise", "source": "synth"}
+{"text": "Ui cảm ơn ad nhiều lắm 😊 🙏", "label": "chitchat", "style": "emoji", "source": "synth"}
+{"text": "alo, co ai o day k ah", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "ukm dc rồi, cảm ơn b nhìu á", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "ukm dc r, tks bn nhìu nha 👍", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "okay thanks nhe, mai minh lien he lai 💯", "label": "chitchat", "style": "emoji", "source": "synth"}
+{"text": "Tks nha shop, mai gap lai", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "chaof baann nheef, hooom nay khoeee khongg", "label": "chitchat", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "hello, mk thấy page này có vẻ uy tín đó", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "Cảm ơn đã phản hồi nhanh thế! 👍", "label": "chitchat", "style": "emoji", "source": "synth"}
+{"text": "Cammown bann nhaa, ratttt camown lắmm á", "label": "chitchat", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "ukk, chúc bạn 1 ngày vui vẻeee nhéeee", "label": "chitchat", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "Ok, cảm ơn bạn đã tư vấn nha. Chuc ban buoi toi vui ve", "label": "chitchat", "style": "khong_dau_phan", "source": "synth"}
+{"text": "dc r, thanks nhìu nha ad", "label": "chitchat", "style": "teencode", "source": "synth"}
+{"text": "Hi ban ơi, chuc mot ngay tot lanh nha 😄👋", "label": "chitchat", "style": "emoji", "source": "synth"}
+{"text": "dạ chào chị ạ, cháu chào", "label": "chitchat", "style": "chuan", "source": "synth"}
+{"text": "Oke luôn, hen gap lai ban sau 👋", "label": "chitchat", "style": "emoji", "source": "synth"}
+{"text": "Vâng ạ, em cảm ơn anh đã tư vấn nhiệt tình 🥰", "label": "chitchat", "style": "chuan", "source": "synth"}
+{"text": "ok cam on nhe, mai minh lien hệ lai", "label": "chitchat", "style": "khong_dau", "source": "synth"}
+{"text": "ok cam on ban da tu van tan tinh nha", "label": "chitchat", "style": "khong_dau_phan", "source": "synth"}
+{"text": "ok cảm ơn ban nhieu nhe 👍😊", "label": "chitchat", "style": "emoji", "source": "synth"}
+{"text": "shop k ơi, cảm ơn nhìu nhaaa 💕", "label": "chitchat", "style": "teencode", "source": "synth", "judge": "parse_failed"}
+{"text": "Cảm ơn shop nhìuuu lắmmm, lầnn sau saiii cần gìiii lạiii tìm shoppp nhaaaa", "label": "chitchat", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "chào chào anh em ơi ơi có ai đâu không", "label": "chitchat", "style": "asr_noise", "source": "synth"}
+{"text": "cam on anh da tu van nhiet tinh nha", "label": "chitchat", "style": "khong_dau", "source": "synth"}
+{"text": "dc roi dc roi, lan nay tui k dung dich vu nua dau, sua ly hop ma xe van bi giat giat khi chay ban cho tui biet ly do dc khong hay chi biet thu tien thoi 💢", "label": "complaint", "style": "teencode", "source": "synth"}
+{"text": "Nói thẳng luôn là lần này tôi rất bực mình vì sửa xe mất cả buổi sáng mà về thì đèn pha vẫn không sáng, gọi lại thì nói phải đem xe vô lại??? Tôi đâu có nhiều thời gian thế được", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "em đem xe đến thay má phanh sau hôm hôm trước mà giờ phanh vẫn cứ kêu két két, có phải phải má giả hay sao ấy ạ? em hơi thất vọng về ch chất lượng", "label": "complaint", "style": "asr_noise", "source": "synth"}
+{"text": "Thợ sửa xe hôm qua hôm qua của bên em rất rất thiếu chuyên nghiệp ạ, mình mình nói là thay lốp sau thay lốp sau nhưng anh ấy cứ cứ bảo chưa cần thay, về nhà về nhà lốp nổ giữa đường giữa đường, mình phải gọi cứu hộ tốn thêm tiền mất thêm thời gian.", "label": "complaint", "style": "asr_noise", "source": "synth"}
+{"text": "em ơi sao thay dầu xog máy nó rung to hơn trươc nhỉ? em nói là ok rùi mà sao nghe nó cứ lạ lạ, phải chăng bên em thay nhầm loại dầu rồi không?", "label": "complaint", "style": "khong_dau_phan", "source": "synth"}
+{"text": "thay lốc xe tu hom truoc ma bay gio chay van rung lay cả tay lai. dưa đi kiem tra lai thi noi 'binh thuong ma anh' nhung ma ro rang van thay bat thuong. doi xu kieu nay thi ai ma chiu noi?", "label": "complaint", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Hôm qua mới thay dầu xong mà sao hôm nay xe nó kêu lục cục lục cục lạ vậy ạ? Có phải thợ làm thiếu gì không vậy? Tôi bực lắm đây!", "label": "complaint", "style": "asr_noise", "source": "synth"}
+{"text": "bực mình quá! hẹn 9h sáng đến bảo dưỡng xe lead, đợi mãi đến 11h30 mới được gọi vào. Hỏi thì bảo đông khách, nhưng sao k báo trước để mình đổi lịch? Lãng phí cả buổi sáng ngồi chờ 😤 thất vọng với cách quản lý giờ giấc ở đây", "label": "complaint", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Sửa xong mấy hôm đã hỏng lại rồi, bánh sau vẫn kêu lạo xạo. Mang lại sửa thì bảo phải đợi thêm 3 ngày nữa, vậy cũng gọi là dịch vụ à? Thất vọng quá!", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "cho toi hoi tai sao sua may lanh xe ab k dc luon vay sua xog 2 ngay ma van nong nhu mo thoi tien thi thu het roi nhung chat luong dau ma noi 😤", "label": "complaint", "style": "khong_dau", "source": "synth"}
+{"text": "Sửa máy lạnh ô tô xong 2 hôm mà giờ lại không mát rồi, thợ làm có tâm không vậy? Mất tiền oan quá!", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "Sao mà tệ thế! Hôm qua sửa xong rồi mà hôm nay đèn pha lại chập chờn như cũ. Tôi bực mình lắm đấy, tiền thì mất mà xe vẫn hư như thường 😤", "label": "complaint", "style": "emoji", "source": "synth"}
+{"text": "đem xe đến bảo dưỡng định kỳ nhưng nhân viên tư vấn cứ ép mua thêm dịch vụ rửa khoang máy, phủ gầm gì đó mà mình k cần. nói từ chối nhiều lần mà vẫn cứ hỏi lại, rất khó chịu", "label": "complaint", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Xe tôi sửa đèn pha, về nhà thấy đèn hậu lại bị vỡ thêm cái. Hỏi thì bảo do xe cũ tự nhiên vỡ chứ ko phải lỗi thợ. Vậy sao lúc gửi xe vẫn nguyên vẹn??? Thái độ đùn đẩy trách nhiệm kiểu này rất đáng thất vọng.", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "Mình đã nói rõ là cần thay lốp trước bên phải, sao họ lại thay nhầm sang bên trái? Giờ phải chạy lại tốn thời gian, tiền xăng ai bồi thường 😡😡", "label": "complaint", "style": "emoji", "source": "synth"}
+{"text": "Tôi rất thất vọng! Tuần trước sửa hệ thống điện, hôm nay đèn pha lại không sáng. Gọi điện hỏi thì cứ hẹn ngày mai ngày kia, không ai chịu trách nhiệm về công việc đã làm cả 😡", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "sua xong 3 hom ma den gio van rung cum tay lai kho chiu vcl. goi hotline khong ai nghe may a. tien thi thu nhanh nhung chiu trach nhiem thi khong thay ai 😤", "label": "complaint", "style": "khong_dau", "source": "synth"}
+{"text": "Xe toi thay bugi roi ma van no no khong dc nhu truoc may ong lam viec the nao vay gio toi phai quay lai lan nua chứ khong chịu noi dc", "label": "complaint", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Chán quá! Hứa làm trong 2h nhưng đợi gần 5 tiếng. Xong xuôi rồi còn phát hiện vỏ xe bị xước thêm mấy vết, hỏi thì nói ko biết. Bồi thường thì không chịu, chỉ xin lỗi suông 😡 Lần sau không dám ghé nữa.", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "k hỉu bên đó làm việc kiểu j nữa, xe mk bảo hôm trước đã sửa ổn r mà giờ vẫn bị chảy dầu dưới gầm. Gọi điện thì cứ hẹn hò mãi k giải quyết dc gì 🙄", "label": "complaint", "style": "teencode", "source": "synth"}
+{"text": "Lần này thật sự quá tệ luôn á. Sửa bình ắc quy xe Vision mà giờ đèn vẫn yếu, khởi động vẫn khó. Gọi lên thì cứ bảo \"bình cần thời gian chạy ổn định chị ơi\" nhưng đã 10 ngày rồi còn gì. Thợ có kiểm tra kỹ trước khi giao xe k vậy???? 😡", "label": "complaint", "style": "emoji", "source": "synth"}
+{"text": "Tôi chán lắm r đó 😓 lần nào đem xe tới cũng hẹn 2 tiếng là xong, nhưng lần nào cũng phải đợi 4-5 tiếng. Hôm trước hẹn 9h sáng tới, đợi tới 2h chiều mới đc gọi vs thái độ cực kỳ hờ hững. K ai xin lỗi hay giải thích j cả. Dịch vụ tệ quá!!!", "label": "complaint", "style": "emoji", "source": "synth"}
+{"text": "Hôm qua mình đặt lịch bảo dưỡng xe, tới nơi chờ gần 2 tiếng ko ai báo gì cả. Hỏi thì nói đang bận, vậy đặt lịch để làm j? Thái độ lại còn cộc lốc nữa chứ", "label": "complaint", "style": "chuan", "source": "synth"}
+{"text": "🆘🆘🆘 Xe bốc cháy giữa cầu Rạch Chiếc!!! Khói đen mù mịt không thoát ra được 🔥🔥 Cần cứu hộ NGAY", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "EMERGENCY!!! Xe ô tô va chạm mạnh ở ngã tư Láng Hạ - Thái Hà, có người bị thương nặng đang chảy máu, cần cấp cứu ngay! Gọi cứu thương giúp tôi! 😱😱😱", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "chết máy giữa hầm Thủ Thiêm, xe sau bấm còi inh ỏi, tôi ko khởi động lại đc, pin chết hẳn, nguy hiểm quá cần kéo ra ngoài gấp ạ 😰🆘", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "tai nạn nghiêm trọng ạ!! xe ô tô lao xuống mương nước sâu ở đường tỉnh lộ 10, nước ngập vào trong xe r, 2 người bị kẹt trong xe cần cứu hộ khẩn cấp!!!", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "anh ơi xe a chết máy giữa hầm Thủ Thiêm r, sau a còn nhiều xe đag bóp còi inh ỏi, a k khởi động lại đc, nguy hiểm lắm cần kéo xe ra gấp ạ!!!", "label": "emergency", "style": "teencode", "source": "synth"}
+{"text": "TAI NẠN NGHIÊM TRỌNG!!! Xe 7 chỗ lao xuống kênh ở đường Nguyễn Duy Trinh quận 2, nước ngập vào cabin rồi, 4 người trong xe đang mắc kẹt không ra được, cửa không mở được do áp lực nước. CẦN THỢ LẶN VÀ CẨU HỘ KHẨN CẤP NGAY!!!", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "HELP! Xe tôi đang bốc cháy ở km15 cao tốc Hà Nội - Hải Phòng! Khói bốc lên nhiều lắm, không dám lại gần! Cần cứu hộ gấp!!!", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "TAI NẠN KỆP!!! lật xe lật trên đèo Bảo Lộc lúc chạy xuống dốc gấp rẽ cua k kip xe văng ra mép vực me k ra khoi xe dc chan bi ket luv giup vs 🚨🆘", "label": "emergency", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "Anh ơi!!! Xe máy con bị xe tải tông ở cầu vượt Linh Xuân, con bị ngã văng ra đường, chân chảy máu nhiều lắm, xe nát hết rồi 😭😭 Em cần trợ giúp gấp!!!", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "TAI NẠN NGHIÊM TRỌNG 🔥🔥 xe tải tông vào xe con ở quốc lộ 1A đoạn qua Bình Chánh, có 3 người bị kẹt trong xe cần cứu hộ khẩn cấp!!!", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "mat phanh roi anh oi xe dang chay xuong doc khong keo duoc toi dang o duong vanh dai 3 gan cau vuot nga tu pham van dong", "label": "emergency", "style": "khong_dau", "source": "synth"}
+{"text": "ô tô em đang chảy dầu phanh toàn bộ xuống đường, bấm phanh ko ăn gì hết, đang cố dừng xe bằng phanh tay ở đường Võ Văn Kiệt. Nguy hiểm lắm cần người đến ngay!!!", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "tai nan tai nan rồi ạ xe tôi va chạm với xe máy trên đường Võ Văn Kiệt người bị thương nằm đường máu chảy nhiều cần cứu thương gấp lắm", "label": "emergency", "style": "asr_noise", "source": "synth"}
+{"text": "aaaaa xe chay cháy chay roi giua cao toc nay troi oi sao tat dc may nay khoi boc len tung tung roi co ai cuu k", "label": "emergency", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "help me gap gap xe mat phanh tren doc cau vuot thanh thai con chay xuong duoc dau ma chan khong an giu khong duoc nua chinh xe vao lan duong ben canh roi gio dung chan duong qua", "label": "emergency", "style": "khong_dau", "source": "synth"}
+{"text": "Cứu với! Xe tôi đang cháy đuôi xe ở đường Lê Văn Việt, khói bốc lên nhiều lắm, chồng tôi đang cố tắt lửa nhưng không được. Các anh đến gấp giúp tôi với 😱😱", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "CAP CUU a! phanh xe bi hư toàn bộ đag lao xuống dốc cầu Phú Mỹ, đạp phanh k ăn thua gì, tốc độ tăng dần sắp va vô dải phân cách rồiii", "label": "emergency", "style": "khong_dau_phan", "source": "synth"}
+{"text": "khẩn cấp lắm ạ! xe mất phanh mất phanh hoàn toàn luôn đang chạy xuống dốc cầu Rạch Chiếc ko biết làm sao giờ", "label": "emergency", "style": "asr_noise", "source": "synth"}
+{"text": "xe bốc cháy rùi á má ơi đg ở ven cao tốc bình triệu có mùi xăng vs khói đen k biết làm sao giờ 🔥🔥😰", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "Khẩn cấp! Xe tôi bốc khói động cơ rồi có mùi cháy nhựa nữa đang dừng bên lề đường hầm Thủ Thiêm, sợ nó cháy lớn lắm, anh đến ngay được không?", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "k biet sao xe no no lop giua cao toc r xe mat lai dam vao dai phan cach co nguoi bi thuong can xe cap cuu vs cuu ho ngay di a 😭😭", "label": "emergency", "style": "teencode", "source": "synth"}
+{"text": "xe t bj chét máy giửa cao tốc Trung Lương, xe tải đag chay lại gầm rùi k thoát đc, SOS!!!", "label": "emergency", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "mat phan roi xe dang chay tren cao toc bien hoa vung tau cuu ho gap voi", "label": "emergency", "style": "khong_dau", "source": "synth"}
+{"text": "tai nạn nghiêm trọng 3 xe oto tông nhau liên hoàn cao tốc bến lức long thành km 23 có người bị kẹt trong xe kêu cứu cần công an cứu hộ ngay lập tức 🚑🚨", "label": "emergency", "style": "khong_dau", "source": "synth"}
+{"text": "🚨🔥 XE ĐANG CHÁY Ở BÃI ĐỖ CHUNG CƯ VINHOMES!!! Lửa từ khoang máy bắn ra, em đã gọi 114 rồi nhưng cần cứu hộ kéo xe ra gấp không cháy lan sang xe khác ạ! 😱", "label": "emergency", "style": "emoji", "source": "synth"}
+{"text": "Anh ơi phanh em hổng rồi đang xuống dốc Mã Pì Lèng, cố đạp k ăn thua, xe chạy nhanh dữ, sợ lao xuống vực lắm ạ giúp em với 😭😭😭", "label": "emergency", "style": "chuan", "source": "synth"}
+{"text": "phí cứu hộ xe máy bao nhiêu tiền vậy ad? mình muốn biết trước để còn tính toán", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "cho mk hoi chuyen nay, neu mk thay nhot roi ma thay no k hop vs xe thi shop co doi lai dc ko a? chinh sach doi tra the nao?", "label": "faq", "style": "teencode", "source": "synth"}
+{"text": "mình mua phu tung roi lap vao xe roi nhung thay khong phu hop, vậy có đổi trả đươc ko a? chính sách hoan tien the nao", "label": "faq", "style": "khong_dau_phan", "source": "synth"}
+{"text": "quy trinh cuu ho cua ben minh nhu the nao vay a chi tiet cho minh biet dc khong", "label": "faq", "style": "khong_dau", "source": "synth"}
+{"text": "cho mình hỏi phí đăng ký gói cứu hộ của bên XeCare bao nhiêu tiền một năm vậy ạ?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "phu tung da lap co doi tra dc k neu nhu k hop hay bi loi gi do?", "label": "faq", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Cho mình hỏi đăng ký gói cứu hộ như thế nào ạ? Phí hàng tháng bao nhiêu?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "cho e hỏi thời gian bảo hành đồ thay thế nhu phanh, lốp, ắc quy là bao lâu vậy shop", "label": "faq", "style": "khong_dau_phan", "source": "synth"}
+{"text": "cho hỏi giá thay dầu máy ô tô khoảng bao nhiêu tiền và có gồm công thay không ạ 😊", "label": "faq", "style": "emoji", "source": "synth"}
+{"text": "phu kiên lap xog roi ma lỗi do sp có đổi lại hay hoàn $ ko shop 🤔💰", "label": "faq", "style": "emoji", "source": "synth"}
+{"text": "mik mua phu tung roi ma lap vao k hop co hoan tien dc hem shop? chinh sach doi tra cua shop ra sao a", "label": "faq", "style": "teencode", "source": "synth"}
+{"text": "dang ky goi cuu ho xe may co mat phi khong a, neu co thi bao nhieu tien 1 thang vay 🤔", "label": "faq", "style": "khong_dau", "source": "synth"}
+{"text": "Cho mình hỏi đăng ký gói cứu hộ thế nào ạ? Có mấy loại gói và giá cả ra sao?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "phi cuu ho bao nhieu tien mot lan vay shop oi minh muon biet truoc", "label": "faq", "style": "khong_dau", "source": "synth"}
+{"text": "Quy trình cứu hộ của bên mình diễn ra ntn? Mih cần biết trước để yên tâm đk gói", "label": "faq", "style": "khong_dau_phan", "source": "synth"}
+{"text": "bảo dưỡng định kỳ xe tay ga bao lâu 1 lần vậy adđ? với lại chi phí kich hoạc khoảng bao nhiu?", "label": "faq", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "cho e hỏi bảo hành phụ tùng chính hãng bên anh bao lâu vậy ạ", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "quy trinh cuu ho cua ben minh nhu the nao a? goi dien thoai roi bao lau thi den?", "label": "faq", "style": "khong_dau_phan", "source": "synth"}
+{"text": "mua phu tung roi ma lap vao xe r thi co doi tra dc k a? neu k vua thi sao", "label": "faq", "style": "teencode", "source": "synth"}
+{"text": "cho hỏi nè giá thay dầu và bảo dưỡng toàn bộ cho SH 2020 là bao nhiu tiền? Có gói trọn gói k shop?", "label": "faq", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Cho mình hỏi đăng ký gói cứu hộ xe máy thế nào ạ? Có các gói nào và giá cả ra sao?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "Quy trình cứu hộ của bên mình gồm những bước nào vậy ạ? Mình muốn biết trước khi đăng ký", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "gói bảo dưỡng xe máy giá bao nhiu vậy ạ? có các gói nào khác nhau k shop? 🤔", "label": "faq", "style": "emoji", "source": "synth"}
+{"text": "cho mình hỏi phí cứu hộ của bên mình bao nhiêu vậy ạ? và quy trình đăng ký gói cứu hộ như thế nào?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "Chính sách hoàn tiền khi mua phụ tùng nhưng không vừa xe của mình như thế nào? 🤔💰", "label": "faq", "style": "emoji", "source": "synth"}
+{"text": "e muốn hỏi quy trình thay dầu máy ô tô như thế nào và mất khoảng bao lâu để hoàn tất ạ?", "label": "faq", "style": "chuan", "source": "synth"}
+{"text": "em đăt lich thay lốc xe ngay 15/3 roi nhung bay jo muon chuyenr sang ngay 20/3 duoc khong aj? vi em phai di công tác ghấp", "label": "modify_booking", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "Chị ơi, em đặt lịch bảo dưỡng xe ngày 15 rồi mà giờ bận quá, chị cho em đổi sang chiều thứ 7 tuần sau được không ạ?", "label": "modify_booking", "style": "chuan", "source": "synth"}
+{"text": "Em muốn đổi lịch hẹn bảo dưỡng từ thứ 5 sang thứ 7 được không ạ? Vì em bận công tác gấp", "label": "modify_booking", "style": "chuan", "source": "synth"}
+{"text": "E ơi cái lịch bảo dường định kỳ e đặt ngày 18/12 giờ e muốn dời sang ngày 20/12 vì e phải đi công tác gấp", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Anh ơi em đặt lịch kiểm tra định kỳ chiều nay 3h rồi nhưng xe em bị hỏng giữa đường, em muốn đổi sang tuần sau hoặc hủy luôn cũng được ạ 😢", "label": "modify_booking", "style": "emoji", "source": "synth"}
+{"text": "Anh ơi, đơn thay nhớt ngày 20 e đặt hôm trươc giờ muốn chuyển sang ngày 23 dc k ạ?", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "em doi lich hen bao tri tu 9h sang 2h chieu cung ngay do nhe ad, sang em ko rảnh", "label": "modify_booking", "style": "khong_dau", "source": "synth"}
+{"text": "hic 😭 e đặt lịch sửa xe vision sáng mai 8h r mà tối qua xe e bị ngã nặng hơn, giờ e muốn hủy lịch cũ vs book lại lịch sửa tổng thể luôn đc k ad? Hoặc chỉ sửa đổi nội dung cũng ok 🙏✨", "label": "modify_booking", "style": "emoji", "source": "synth"}
+{"text": "sáng hôm qua e đặt đổi lốp mà giờ e cần đổi sang chiều dc k ạ, sáng e bận họp 😅", "label": "modify_booking", "style": "emoji", "source": "synth"}
+{"text": "Anh đặt lịch thay dầu ngày 15 rồi nhưng h muốn dời sang ngày 18 đc ko shop? Ngày đó anh có công tác nên ko tiện", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "anh oi cho em doi lich sua xe sang thu 7 dc khong a? thu 5 em ban qua khong sap xep duoc", "label": "modify_booking", "style": "khong_dau", "source": "synth"}
+{"text": "Cho em hỏi, em đã đặt lịch bảo dưỡng xe SH ngày 15/1 lúc 9h sáng rồi, nhưng giờ em có việc gấp không đến được. Em có thể đổi sang chiều cùng ngày được không ạ? Hoặc sang ngày 16 cũng được ạ.", "label": "modify_booking", "style": "chuan", "source": "synth"}
+{"text": "Anh ơi e đặt lich sửa phanh hôm 15 rồi nhưng giờ muốn đoi sang ngay 18 dc ko ạ?", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Anh đặt combo vệ sinh kim phun + thay nhớt mà giờ chỉ muốn giữ lại mỗi vệ sinh thôi, hủy phần thay nhớt giúp anh nhé 🚗", "label": "modify_booking", "style": "emoji", "source": "synth"}
+{"text": "e đặt bao duong định kỳ ngày mai lúc 3h mà giờ muốn dổi sang thứ 4 tuần sau, vì ngày mai e phải đưa con đi khám bệnh gấp á 😢", "label": "modify_booking", "style": "emoji", "source": "synth"}
+{"text": "ad ơi, e book lịch rửa xe + thay lốc máy ngày 15 r nhưng giờ e k đi dc, cho e dời sang ngày 18 đc k ạ? thanks ad nhìu 🙏", "label": "modify_booking", "style": "teencode", "source": "synth"}
+{"text": "Chị ơi, lịch rửa xe sáng mai 8h e book hôm kia bây giờ đổi sang 10h30 cùng ngày đc ko ạ?", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Mình đăng ký dịch vụ kiểm tra định kỳ xe ô tô hôm trước nhưng giờ muốn dời sang tuần sau vì bận công tác xa, shop sắp xếp lại giúp mình nhé cảm ơn nhiều", "label": "modify_booking", "style": "chuan", "source": "synth"}
+{"text": "Em đặt dịch vụ thay nhớt rồi mà giờ muốn đổi sang gói bảo dưỡng tổng thể luôn đươc ko ạ? Đơn hàng của em mã #2847", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "minh muon doi gio hen tu 10h sang 2h chieu cung ngay do duoc hem", "label": "modify_booking", "style": "khong_dau", "source": "synth"}
+{"text": "Em book lịch sửa xe lúc 10h sáng thứ 5 nhưg bây h có việc gấp, đổi sang 3h chìu cùng ngày đc k a? 😅", "label": "modify_booking", "style": "khong_dau_phan", "source": "synth"}
+{"text": "minh hen thay lop sang 9h sang duoc khong? gio hen cu la 2h chieu ma minh di lam khong kip", "label": "modify_booking", "style": "khong_dau", "source": "synth"}
+{"text": "kiem tra don hang giup minh vs ma don DH-VN789012 minh dat hom thu 5 roi ma chua thay cap nhat gi", "label": "order_lookup", "style": "khong_dau", "source": "synth"}
+{"text": "ad ơiii tra cứu dùm mình vs, mình đặt bộ phanh đĩa mà k nhớ mã đơn, chỉ nhớ đặt 3 hôm trước thôi, check đc hông ạ 😅", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "anh check hộ e đơn e đặt hôm qua đc k ạ? mã ĐH156789, e cần gấp lắm nên phải xem nó ship chưa 😊", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "tra cuu don hang PT567890 cho t vs, t dat tu hom thu 5", "label": "order_lookup", "style": "teencode", "source": "synth"}
+{"text": "sao don PT556XC ko co cap nhat j het v ad oi? dat tu ngay 3 r ma van hien thi cho xu ly 😩😩", "label": "order_lookup", "style": "teencode", "source": "synth", "judge": "parse_failed"}
+{"text": "Cho mình hỏi đơn hàng PT2024XC789 đặt hôm qua giờ đến đâu rồi ạ? Sao chưa thấy thông báo gì cả", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "Đơn PT567XC mình đặt 5 ngày rồi mà vẫn chưa nhận được hàng, kiểm tra hộ em xem sao nhé 🙏", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "Đơn mã HD-8829 của t nó đang chờ xử lý hay đã gửi hàng r nhỉ? Check giùm vs ạ 🙏", "label": "order_lookup", "style": "teencode", "source": "synth"}
+{"text": "Cho mình hỏi đơn hàng PT20241215 của mình giờ đang ở trạng thái nào vậy ạ? Mình đặt hôm kia mà chưa thấy thông báo gì", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "anh ơi e mua lốp xe trc đó có mã đơn là DH-67890 mà chưa biết đã duyệt hay chưa ạ? Có ship trong tuần này ko vậy anh 🚚", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "don phu tung dat tu thang truoc ma chua thay ai goi xac nhan luon tra cuu ho cai don 88234 nay xem sao", "label": "order_lookup", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Cho em hỏi đơn hàng mã DH-24578 em đặt hôm kia giờ đến đâu rồi ạ? Sao chưa thấy gọi giao 😢", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "anh cho em tra cứu đơn hàng dầu nhớt + lọc gió mã PT-12-2024-789 đặt ngày 14/12, có giao được trong tuần này k ạ?", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "em muon kiem tra don hang ma so XC456789 da dat tu tuan truoc a, khong biet da giao chua", "label": "order_lookup", "style": "khong_dau", "source": "synth"}
+{"text": "Cho em hỏi đơn hàng mã PT2478 em đặt hôm kia giờ đến đâu rồi ạ? Sao chưa thấy ai gọi xác nhận", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "anh oi cho anh xem lai don hang anh dat hom qua dc khong a anh quen mat ma don roi", "label": "order_lookup", "style": "khong_dau", "source": "synth"}
+{"text": "cho minh xem don hang ma PT20231205 dang o dau roi a sao chua thay ai goi", "label": "order_lookup", "style": "khong_dau", "source": "synth"}
+{"text": "Đơn hàng của tôi đã được xử lý chưa vậy? Mã tham chiếu PTX990876, tôi đặt cách đây 5 ngày nhưng tracking vẫn không cập nhật gì cả 📦", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "chị kiểm tra hộ em đơn mã #23456 xem đã gửi hàng chưa ạ? Em đặt bộ phanh đĩa cho exciter từ thứ 2 tuần trc rồi mà k thấy tin tức j", "label": "order_lookup", "style": "khong_dau_phan", "source": "synth"}
+{"text": "check giúp e đơn XC99887766 vs ạ, đặt từ 3 hôm trc mà k thấy ai gọi xác nhận j hết 😢", "label": "order_lookup", "style": "teencode", "source": "synth"}
+{"text": "sao đơn PT20241210-XM999 mình đặt dây curoa + nhông sên mà k thấy cập nhật j hết z trời 😒 dc check hộ k ạ", "label": "order_lookup", "style": "teencode", "source": "synth"}
+{"text": "e đặt lọc gió hôm 15 tháng trước rồi mà sao chưa thấy ship nhỉ? tra cuu giúp e đơn XC45678 với ạ", "label": "order_lookup", "style": "khong_dau_phan", "source": "synth"}
+{"text": "xem don PT77234 dc k ad ơi, t dat nhớt motul ma đợi mãi chưa dc xác nhan j lun 😢 cần bik trang thai", "label": "order_lookup", "style": "teencode", "source": "synth"}
+{"text": "anh kiểm tra giúp em đơn phụ tùng số PT2024120345 với ạ, em đặt cách đây 5 ngày mà sao trên app vẫn hiển thị chờ xác nhận vậy", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "ad check giúp e vs ạ, đơn HD1523 e mua lốp xe + dầu nhớt hôm trước giờ ship dc chưa, hay là còn đ chờ shop duyệt á? 📦😅", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "Cho mình hỏi đơn hàng PT20241215-0342 của mình bây giờ tới đâu rồi ạ? Hôm trước đặt lốp Michelin mà chưa thấy gọi", "label": "order_lookup", "style": "chuan", "source": "synth"}
+{"text": "anh oi cho em xem don phụ tung em dat hom qua den dau roi a ma sao chua thay goi dien", "label": "order_lookup", "style": "khong_dau", "source": "synth"}
+{"text": "Anh kiểm tra giúp em đơn hàng số #XC-10283 với ạ, không biết đã xử lý chưa hay đang chờ duyệt gì đó không 🤔", "label": "order_lookup", "style": "emoji", "source": "synth"}
+{"text": "don hang em dat ma la HD6283 bay gio o trang thai nao roi cho em xem voi a em dat tu ngay 15 roi ma sao chua co thong bao gi", "label": "order_lookup", "style": "khong_dau", "source": "synth"}
+{"text": "thời tiết mấy hôm nay có mưa ko ad ơi??? em định đi chơi xa sợ trời xấu lắmm", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Bên Honda Head cua doi thu danh gia the nao anh? Co tot hon XeCare khong", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "cho tôi xin tư vấn pháp lý: tôi bị tai nạn xe máy, bên kia ko chịu bồi thường, tôi phải kiện ra toà như thế nào? Cần chuẩn bị giấy tờ gì?", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "Garage Minh Phát bên đường Láng giá thế nào so vs XeCare? Nghe bảo ok lắm 🤔", "label": "out_of_scope", "style": "emoji", "source": "synth"}
+{"text": "Mình bị tai nạn, bên kia ko chịu bồi thường, giờ muốn ra tòa kiện thì phải làm thủ tục gì? Có cần luật sư không?", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "bên garage đối thủ của các bạn là ai vậy? nghe nói bên XX auto rẻ hơn đúng k", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "kể chuyên cuoi cuoi cuoi đi anh ơi chán quáaaaa 😂 kể cái j cũng đc", "label": "out_of_scope", "style": "sai_chinh_ta", "source": "synth"}
+{"text": "thoi tiet mai ha noi the nao co mua khong ban oi", "label": "out_of_scope", "style": "khong_dau", "source": "synth"}
+{"text": "Cho em hỏi giá vàng SJC hôm nay bao nhiêu vậy ạ? Em muốn mua đầu tư nè 😊", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "anh ơi em bị tai nan giao thong roi ma ben kia khong chiu tranh nhiem thi em phai kien ra toa an nhu the nao a em chua biet thu tuc gi het", "label": "out_of_scope", "style": "khong_dau", "source": "synth"}
+{"text": "chỗ bên Honda Dream nó có dịch vụ tốt hơn bên anh k ạ? nghe nói giá rẻ hơn", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Cho em hỏi giá vàng SJC hôm nay bao nhiêu rồi ạ? Em muốn mua vàng đầu tư mà không biết giờ có nên mua không", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "Tui đag cần tư vấn pháp lý về hợp đồng mua xe trả góp bị lừa, kiện ngân hang như nào ạ?", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Bên Yamaha Town với ben Honda Head bên nào uy tín hơn ạ? Cho mình xin ý kiến luôn", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "Cho tôi hỏi bên Yamaha Town hay bên Honda HEAD thì dịch vụ nào tốt hơn? Tôi đang phân vân chưa biết nên chọn chỗ nào để bảo dưỡng định kỳ", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "Anh có biết Honda Miền Nam ở đâu k? Nghe nói giá rẻ hơn chỗ anh, có đúng hem?", "label": "out_of_scope", "style": "teencode", "source": "synth"}
+{"text": "cho tôi hỏi dự báo thời tiết tuần sau Hà Nội có nắng không vậy tôi định đi công tác", "label": "out_of_scope", "style": "khong_dau_phan", "source": "synth"}
+{"text": "thoi tiet ha noi ngay mai co mua khong nhi anh muon di chua xe ma so troi mua", "label": "out_of_scope", "style": "khong_dau", "source": "synth"}
+{"text": "ad oi cho mk hoi cua hang Petro co tot k hay la minh nen mua xe o XeCare day? ai uy tin hon dc k ad?", "label": "out_of_scope", "style": "teencode", "source": "synth"}
+{"text": "Cho mình hỏi giá vàng SJC hôm nay bao nhiêu vậy ạ? Định mua vàng nhẫn tròn trơn ý.", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "Cho mình hỏi giá vàng SJC hôm nay bao nhiêu 1 chỉ vậy? Đang định mua", "label": "out_of_scope", "style": "chuan", "source": "synth"}
+{"text": "anh oi anh biet luat khong cho em hoi em muon kien cong ty cu vi no tra luong cham em phai lam nhu the nao de thang kien vay", "label": "out_of_scope", "style": "khong_dau", "source": "synth"}
+{"text": "thoi tiet ha noi ngay mai co mua khong nhi? minh dinh di choi", "label": "out_of_scope", "style": "khong_dau", "source": "synth"}
+{"text": "kể cho mình nghe 1 câu chuyện cười đi, chán quá 😂😂😂", "label": "out_of_scope", "style": "emoji", "source": "synth"}
+{"text": "Kể chuyện cười về xe máy đi bạn 😂😂 Đang buồn quá cần giải trí 🤣", "label": "out_of_scope", "style": "emoji", "source": "synth"}
+{"text": "Cho em hỏi giá vàng SJC hôm nay bao nhiêu 1 chỉ ạ? Em muốn mua vàng đầu tư", "label": "out_of_scope", "style": "chuan", "source": "synth"}
