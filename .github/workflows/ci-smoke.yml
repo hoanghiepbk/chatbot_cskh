@@ -6,7 +6,12 @@ on:
 
 jobs:
   agent:
+    # Tier 1 gate (TIP-013): offline unit tests (FakeLLM). DB-marked tests auto-skip
+    # when no Supabase env is present (tests/conftest.py:requires_db), so this is the
+    # MANDATORY-green check and runs even on fork PRs (no secrets needed).
     runs-on: ubuntu-latest
+    env:
+      USE_PHOBERT: "false" # PhoBERT not shipped (TIP-012a) — Haiku router path stays default
     defaults:
       run:
         working-directory: agent
@@ -44,3 +49,57 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
+
+  critical-gate:
+    # Tier 2 gate (TIP-013, Blueprint §7): Critical 0-fail adversarial suite against a
+    # REAL agent. Needs a CI-dedicated Supabase Cloud project + an Anthropic key, supplied
+    # via GitHub Secrets (see README → CI/CD). Without secrets (e.g. fork PRs) it
+    # skips-with-warning and PASSES, so it never blocks forks. To make it actually gate
+    # merges, mark "critical-gate" as a REQUIRED status check in branch protection.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect CI secrets
+        id: secrets
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ] && [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "have=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning title=critical-gate skipped::No CI secrets (ANTHROPIC_API_KEY / SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY). Add them (README → CI/CD) to enable the Critical 0-fail gate."
+            echo "have=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: astral-sh/setup-uv@v5
+        if: steps.secrets.outputs.have == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        if: steps.secrets.outputs.have == 'true'
+        run: uv sync
+      - name: Run agent + Critical 0-fail gate
+        if: steps.secrets.outputs.have == 'true'
+        env:
+          USE_PHOBERT: "false"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PHONE_HASH_SALT: ${{ secrets.PHONE_HASH_SALT }}
+          STAFF_API_TOKEN: ci-not-a-secret
+          BGE_M3_MODEL: BAAI/bge-m3
+        run: |
+          uv run uvicorn app.main:app --port 8000 &
+          AGENT_PID=$!
+          for i in $(seq 1 80); do
+            curl -sf http://127.0.0.1:8000/health && break || sleep 3
+          done
+          # runner exit code == number of critical fails → non-zero FAILS this job (blocks merge)
+          uv run python ../evals/runner.py --suite adversarial_critical
+          STATUS=$?
+          kill "$AGENT_PID" 2>/dev/null || true
+          exit $STATUS

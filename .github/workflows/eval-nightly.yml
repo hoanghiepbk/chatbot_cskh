@@ -5,14 +5,61 @@ on:
     - cron: "0 2 * * *"
   workflow_dispatch:
 
+# Trend monitoring, NOT a merge gate (Blueprint §7). Runs the FULL suite (golden +
+# adversarial_critical + adversarial_quality) against a real agent and records eval_runs
+# in Supabase. A real regression shows RED here (visible) but blocks nothing — scheduled
+# runs don't gate PRs. NOTE: the TIP-001 `continue-on-error` stub was REMOVED — the runner
+# exists now, so failures must be visible, not hidden.
 jobs:
   full-eval:
     runs-on: ubuntu-latest
-    # Stub until TIP-009 implements the runner — failures must not block
-    continue-on-error: true
+    defaults:
+      run:
+        working-directory: agent
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Detect CI secrets
+        id: secrets
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ] && [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "have=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning title=nightly skipped::No CI secrets — full eval needs ANTHROPIC_API_KEY / SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY (README → CI/CD)."
+            echo "have=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: astral-sh/setup-uv@v5
+        if: steps.secrets.outputs.have == 'true'
         with:
           python-version: "3.12"
-      - run: python evals/runner.py --suite full
+      - name: Install deps
+        if: steps.secrets.outputs.have == 'true'
+        run: uv sync
+      - name: Run agent + full eval suite
+        if: steps.secrets.outputs.have == 'true'
+        env:
+          USE_PHOBERT: "false"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PHONE_HASH_SALT: ${{ secrets.PHONE_HASH_SALT }}
+          STAFF_API_TOKEN: ci-not-a-secret
+          BGE_M3_MODEL: BAAI/bge-m3
+        run: |
+          uv run uvicorn app.main:app --port 8000 &
+          AGENT_PID=$!
+          for i in $(seq 1 80); do
+            curl -sf http://127.0.0.1:8000/health && break || sleep 3
+          done
+          # --suite all = golden + adversarial_critical + adversarial_quality; writes eval_runs.
+          # Exit code = critical fails → RED night run is the visible signal (no gate).
+          uv run python ../evals/runner.py --suite all
+          STATUS=$?
+          kill "$AGENT_PID" 2>/dev/null || true
+          exit $STATUS
+      - name: Flag regression (trend alert, non-blocking)
+        if: failure()
+        run: echo "::warning title=nightly eval regressed::Full eval reported failures — inspect eval_runs in Supabase. (Wiring an auto-issue/Slack alert is a follow-up.)"
