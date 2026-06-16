@@ -1,0 +1,25 @@
+{
+  "intents": [
+    "faq",
+    "booking",
+    "order_lookup",
+    "modify_booking",
+    "emergency",
+    "complaint",
+    "chitchat",
+    "out_of_scope"
+  ],
+  "bio": [
+    "O",
+    "B-PHONE",
+    "I-PHONE",
+    "B-PLATE",
+    "I-PLATE",
+    "B-ID",
+    "I-ID",
+    "B-EMAIL",
+    "I-EMAIL"
+  ],
+  "base": "vinai/phobert-base",
+  "max_len": 128
+}
