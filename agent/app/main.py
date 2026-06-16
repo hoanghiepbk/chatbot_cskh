@@ -12,6 +12,60 @@ from app.graph import retrieval
 load_dotenv_if_present()
 
 
+def load_active_registry(supabase) -> dict:
+    """[TIP-013] Read the active prompt + policy rows. Single source of truth used
+    both at startup (lifespan) and on a registry activate (hot-reload)."""
+    policy_row = (
+        supabase.table("policy_registry").select("*").eq("active", True).execute().data[0]
+    )
+    prompt_row = (
+        supabase.table("prompt_registry")
+        .select("*")
+        .eq("name", "system_main")
+        .eq("active", True)
+        .execute()
+        .data[0]
+    )
+    return {"policy": policy_row, "prompt": prompt_row}
+
+
+def _build_chat_graph(state, prompt_row: dict, policy_row: dict):
+    """Rebuild the compiled graph from the current app.state engine pieces + the
+    given prompt/policy. Kept identical to the lifespan wiring so a hot-reload
+    produces the same graph a restart would."""
+    from app.graph.core import GraphDeps, build_graph
+    from app.trace import log_trace
+
+    deps = GraphDeps(
+        llm=state.llm,
+        system_prompt=prompt_row["content"],
+        prompt_version=prompt_row["version"],
+        policy=policy_row["rules"],
+        policy_version=policy_row["version"],
+        search=retrieval.search_kb,
+        trace=log_trace,
+        tools=state.tools,
+        supabase=state.supabase,  # [TIP-008] handoff reads messages/trace
+        phobert=state.phobert,  # [TIP-012a] None unless USE_PHOBERT=true
+    )
+    return build_graph(deps)
+
+
+def apply_active_registry(app) -> dict:
+    """[TIP-013] Load the active prompt+policy into app.state AND rebuild the chat
+    graph. The graph closes over GraphDeps (prompt/policy frozen at build time, and
+    routing thresholds computed once from policy) — so a swap is REQUIRED; mutating
+    app.state alone would leave the running graph on the old version. Hot-reload, no
+    restart. Requires app.state.{supabase,llm,tools,phobert} already set."""
+    reg = load_active_registry(app.state.supabase)
+    app.state.policy = reg["policy"]["rules"]
+    app.state.policy_version = reg["policy"]["version"]
+    app.state.system_prompt = reg["prompt"]["content"]
+    app.state.prompt_version = reg["prompt"]["version"]
+    app.state.chat_graph = _build_chat_graph(app.state, reg["prompt"], reg["policy"])
+    return reg
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.models_loaded = False
@@ -31,36 +85,14 @@ async def lifespan(app: FastAPI):
     # Reflects the embedding model only for now — TIP-012a extends this to PhoBERT.
     app.state.models_loaded = True
 
-    # [TIP-005] active policy + system prompt cached at startup
-    from app.graph.core import GraphDeps, build_graph
+    # [TIP-005/008] engine pieces — built BEFORE the registry so apply_active_registry
+    # (shared with the hot-reload path) can rebuild the graph from app.state.
     from app.llm import AnthropicClient
-    from app.tools import build_tools
-    from app.trace import log_trace
-
-    policy_row = (
-        client.table("policy_registry").select("*").eq("active", True).execute().data[0]
-    )
-    prompt_row = (
-        client.table("prompt_registry")
-        .select("*")
-        .eq("name", "system_main")
-        .eq("active", True)
-        .execute()
-        .data[0]
-    )
-    app.state.policy = policy_row["rules"]
-    app.state.policy_version = policy_row["version"]
-    app.state.system_prompt = prompt_row["content"]
-    app.state.prompt_version = prompt_row["version"]
-
-    tools = build_tools(client)
-    app.state.tools = tools
-
-    llm = AnthropicClient()
-    app.state.llm = llm  # [TIP-008] staff API reuses it for resolve summaries
-
     from app.session import SessionStore
+    from app.tools import build_tools
 
+    app.state.tools = build_tools(client)
+    app.state.llm = AnthropicClient()  # [TIP-008] staff API reuses it for resolve summaries
     app.state.session_store = SessionStore(client)  # [TIP-008b] persistent sessions
 
     # [TIP-012a] eager-load PhoBERT ONNX guard ONLY when enabled (default off → None,
@@ -78,28 +110,19 @@ async def lifespan(app: FastAPI):
         phobert_guard = PhoBERTGuard()
     app.state.phobert = phobert_guard
 
-    deps = GraphDeps(
-        llm=llm,
-        system_prompt=prompt_row["content"],
-        prompt_version=prompt_row["version"],
-        policy=policy_row["rules"],
-        policy_version=policy_row["version"],
-        search=retrieval.search_kb,
-        trace=log_trace,
-        tools=tools,
-        supabase=client,  # [TIP-008] handoff package reads messages/trace
-        phobert=phobert_guard,  # [TIP-012a] None unless USE_PHOBERT=true
-    )
-    app.state.chat_graph = build_graph(deps)
+    # [TIP-005/013] active policy + system prompt → app.state + compiled graph.
+    apply_active_registry(app)
     yield
 
 
 app = FastAPI(title="XeCare Agent Service", lifespan=lifespan)
 app.include_router(chat_router)
 
+from app.api.registry import router as registry_router  # noqa: E402
 from app.api.staff import router as staff_router  # noqa: E402
 
 app.include_router(staff_router)
+app.include_router(registry_router)
 
 
 @app.get("/health")

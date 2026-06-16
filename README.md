@@ -94,6 +94,67 @@ python -m venv .evalvenv && .evalvenv\Scripts\pip install -r evals/requirements.
 > dùng Sonnet ~8s/lượt là phần chậm nhất). `--limit` để smoke rẻ. RAGAS thêm chi
 > phí judge riêng (~$0.3 cho 10 case).
 
+## CI/CD — eval gate 3 tầng (TIP-013)
+
+Khép Critical 0-fail thành cổng tự động (Blueprint §7). Ba tầng:
+
+| Tầng | Workflow | Khi nào | Cần secrets? | Chặn merge? |
+|---|---|---|---|---|
+| **smoke** | `ci-smoke.yml` job `agent` | mỗi push/PR | ❌ | ✅ (unit vỡ → đỏ) |
+| **critical-gate** | `ci-smoke.yml` job `critical-gate` | mỗi push/PR | ✅ | ✅ nếu là *required check* |
+| **nightly** | `eval-nightly.yml` | cron 02:00 | ✅ | ❌ (theo dõi trend) |
+
+- **smoke** chạy `uv run pytest` với `USE_PHOBERT=false`. Test `*_db.py` (đánh dấu
+  `requires_db`) **tự skip** khi không có biến Supabase → chạy được cả trên PR từ fork.
+  Đây là cổng cứng bắt buộc xanh.
+- **critical-gate** dựng agent thật + chạy `runner.py --suite adversarial_critical`
+  (exit ≠ 0 → job đỏ). **Không có secrets → skip-with-warning + PASS** (không chặn fork).
+- **nightly** chạy `--suite all` (golden + critical + quality), ghi `eval_runs`. Lỗi
+  hiện **đỏ** (không che bằng `continue-on-error`) nhưng KHÔNG gác cổng.
+
+### Bật critical-gate / nightly (việc của Homeowner)
+
+1. Tạo **1 project Supabase Cloud RIÊNG cho CI** (free). Áp migrations + seed + ingest KB:
+   ```bash
+   supabase link --project-ref <ci-project-ref>
+   supabase db push                 # migrations
+   # chạy seed/seed.sql trên project CI; rồi ingest KB:
+   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... uv run python agent/ml/embeddings/ingest.py
+   ```
+2. Thêm **GitHub Secrets** (Settings → Secrets and variables → Actions):
+   `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PHONE_HASH_SALT`
+   (PHONE_HASH_SALT phải KHỚP salt dùng khi seed customer_profiles).
+3. Branch protection → bật **`critical-gate`** (và `agent`) làm **required status check**
+   để Critical-fail thực sự chặn merge vào `main`.
+
+> Secrets chỉ tham chiếu `${{ secrets.* }}` trong workflow — KHÔNG hardcode vào YAML.
+
+## Prompt/Policy Registry (TIP-013) — policy-as-data, không cần deploy
+
+Đổi **system prompt** và **policy** (tham số mềm) qua API, có version + **hot-reload**
+(lượt chat kế dùng bản mới ngay, không restart). Auth: `Bearer STAFF_API_TOKEN`.
+
+```bash
+TOKEN=$STAFF_API_TOKEN
+# liệt kê version (preview 200 ký tự)
+curl -H "Authorization: Bearer $TOKEN" localhost:8000/registry/prompts
+# tạo version mới (KHÔNG tự active)
+curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+     -d '{"content":"<prompt mới>"}' localhost:8000/registry/prompts
+# kích hoạt version 3 → hot-reload
+curl -X POST -H "Authorization: Bearer $TOKEN" localhost:8000/registry/prompts/3/activate
+# policy tương tự: /registry/policies (+ /{version}/activate). rules validate kiểu số/list.
+```
+
+- **Quy trình đề xuất (policy-as-data):** tạo version mới → chạy eval (`runner.py`) đối
+  chiếu → chỉ `activate` khi đạt. Đổi chính sách qua dữ liệu, kiểm bằng eval trước khi áp.
+- **Ranh giới an toàn:** registry CHỈ đổi prompt/tham số mềm. **Rule cứng nằm trong code**
+  (`guardrails/output.py:apply_hard_rules`, `tools/*`) — bỏ `refund_cap_vnd` khỏi policy thì
+  mức 5.000.000đ **vẫn bị chặn** (default 2.000.000 trong code). Activate không bao giờ tắt
+  được guardrail cứng.
+- **Lưu ý multi-worker:** hot-reload là in-process (demo 1 worker). Nhiều worker cần
+  pub/sub để đồng bộ — nợ kỹ thuật cho production.
+
 ## Environment
 
 Copy `.env.example` thành `.env` và điền giá trị.
