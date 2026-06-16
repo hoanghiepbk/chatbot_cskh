@@ -53,6 +53,35 @@ def seg(text: str) -> str:
     return word_tokenize(text, format="text")
 
 
+def encode_with_offsets(tok, segmented, max_len):
+    """PhoBERT ships only a SLOW tokenizer (no offset_mapping / word_ids), so build
+    word-level char offsets manually: each whitespace word owns its [start,end) span in
+    `segmented` and every subword inherits it (enough for BIO overlap + span decode).
+    Per-word BPE concatenation equals full-sentence tokenization for PhoBERT (verified).
+    Returns (input_ids, attention_mask, offsets) padded/truncated to max_len.
+    MUST stay identical to infer.py:encode_with_offsets (train/infer preprocessing parity)."""
+    ids, offs, cursor = [tok.cls_token_id], [(0, 0)], 0
+    for w in segmented.split():
+        start = segmented.find(w, cursor)
+        if start < 0:
+            start = cursor
+        end = start + len(w)
+        cursor = end
+        for sid in tok.encode(w, add_special_tokens=False):
+            ids.append(sid)
+            offs.append((start, end))
+    ids.append(tok.sep_token_id)
+    offs.append((0, 0))
+    ids, offs = ids[:max_len], offs[:max_len]
+    attn = [1] * len(ids)
+    if len(ids) < max_len:
+        pad = max_len - len(ids)
+        ids += [tok.pad_token_id] * pad
+        attn += [0] * pad
+        offs += [(0, 0)] * pad
+    return ids, attn, offs
+
+
 def read(name):
     p = DATA / name
     return [json.loads(ln) for ln in p.read_text(encoding="utf-8").splitlines() if ln.strip()]
@@ -91,9 +120,7 @@ class NerDataset(Dataset):
     def __getitem__(self, i):
         r = self.rows[i]
         segmented = seg(r["text"])
-        enc = self.tok(segmented, truncation=True, max_length=self.max_len,
-                       padding="max_length", return_offsets_mapping=True, return_tensors="pt")
-        offsets = enc["offset_mapping"][0].tolist()
+        ids, attn, offsets = encode_with_offsets(self.tok, segmented, self.max_len)
         labels = [BIO2I["O"]] * len(offsets)
         # locate each entity surface in the SEGMENTED text (try raw + '_'-joined)
         for ent in r.get("entities", []):
@@ -112,11 +139,11 @@ class NerDataset(Dataset):
                 if a < e and b > s:  # token overlaps entity span
                     labels[ti] = BIO2I[("B" if first else "I") + "-" + ent["type"]]
                     first = False
-        # mask special tokens (offset 0,0) with -100
+        # mask special / pad tokens (offset 0,0) with -100
         labels = [-100 if a == b else lab for lab, (a, b) in zip(labels, offsets)]
         return {
-            "input_ids": enc["input_ids"][0],
-            "attention_mask": enc["attention_mask"][0],
+            "input_ids": torch.tensor(ids),
+            "attention_mask": torch.tensor(attn),
             "labels": torch.tensor(labels),
         }
 
