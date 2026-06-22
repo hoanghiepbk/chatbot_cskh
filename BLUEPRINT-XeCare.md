@@ -55,7 +55,7 @@ Nền tảng agent CSKH tiếng Việt cho chuỗi dịch vụ xe giả lập **
 | Console | Refine.dev + Ant Design + Recharts | Khớp niche Admin Dashboard của user |
 | Widget chat | React + Vite (nhúng được iframe) | Đơn giản, subscribe Realtime |
 | CI | GitHub Actions: smoke eval mỗi PR (~25 case), full eval nightly | Kiểm soát chi phí token |
-| Deploy | Vercel (console + widget) · Railway (agent, PyTorch CPU) | [TIP-010.5] RAM ĐO THẬT cục bộ (bge-m3 PyTorch float32): WorkingSet ~1.3GB steady / peak ~1.99GB (Windows); model 2.19GB trên đĩa → ước tính RSS Linux container ~2.5–3.0GB. **Kết luận:** nếu plan Railway ≥8GB (Hobby hiện tại) → GIỮ PyTorch, **đóng nợ ONNX bge-m3** (dư địa lớn). Cần xác nhận giới hạn plan + 1 lần đo RAM trên Railway sau deploy để chốt cuối. PhoBERT (TIP-012a) vẫn dùng ONNX int8 theo kế hoạch riêng |
+| Deploy | Vercel (console + widget) · Railway (agent, PyTorch CPU) | [TIP-010.5] RAM ĐO THẬT cục bộ (bge-m3 PyTorch float32): WorkingSet ~1.3GB steady / peak ~1.99GB (Windows); model 2.19GB trên đĩa → ước tính RSS Linux container ~2.5–3.0GB. **Kết luận:** nếu plan Railway ≥8GB (Hobby hiện tại) → GIỮ PyTorch, **đóng nợ ONNX bge-m3** (dư địa lớn). PhoBERT (TIP-012a) vẫn dùng ONNX int8 theo kế hoạch riêng. **[TIP-016] Đo Railway thật (Linux RSS):** `___ MB` peak — *điền sau khi deploy (Railway → Metrics → Memory), chốt nợ ONNX bằng số Linux thật; xem `docs/DEPLOY.md` B2.6* |
 | Benchmark phụ | Qwen2.5-0.5B QLoRA (train trên Colab T4 free) | Cột so sánh trung thực, 1 config duy nhất |
 
 ---
