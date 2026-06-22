@@ -4,6 +4,7 @@ import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.chat import router as chat_router
 from app.config import load_dotenv_if_present
@@ -119,7 +120,24 @@ async def lifespan(app: FastAPI):
     yield
 
 
+def allowed_origins() -> list[str]:
+    """[TIP-016] Browser allowlist for the Vercel-hosted widget + console.
+    Comma-separated origins from env ALLOWED_ORIGINS; falls back to local dev
+    ports so a fresh clone works without config. NEVER '*' — we allow
+    credentials, and the spec forbids a wildcard with credentials."""
+    raw = os.environ.get("ALLOWED_ORIGINS", "")
+    origins = [o.strip() for o in raw.split(",") if o.strip()]
+    return origins or ["http://localhost:5173", "http://localhost:5174"]
+
+
 app = FastAPI(title="XeCare Agent Service", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins(),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(chat_router)
 
 from app.api.registry import router as registry_router  # noqa: E402
