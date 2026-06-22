@@ -45,6 +45,18 @@ def sparse_score(query_weights: dict[str, float], chunk_weights: dict[str, float
     return sum(w * chunk_weights[t] for t, w in query_weights.items() if t in chunk_weights)
 
 
+def embed_dense(query: str) -> list[float]:
+    """[TIP-015] Dense embedding of a query, reusing the configured bge-m3 model.
+    Used by the semantic faq cache + knowledge-gap detection — NO extra LLM call,
+    same model the retriever uses (sync encode, mirroring search_kb)."""
+    if _model is None:
+        raise RuntimeError("retrieval not configured — call configure() in lifespan first")
+    encoded = _model.encode(
+        [query], return_dense=True, return_sparse=False, return_colbert_vecs=False
+    )
+    return [float(x) for x in encoded["dense_vecs"][0]]
+
+
 async def search_kb(query: str, top_k: int = 5) -> list[Chunk]:
     if _model is None or _client is None:
         raise RuntimeError("retrieval not configured — call configure() in lifespan first")

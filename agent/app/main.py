@@ -33,7 +33,9 @@ def _build_chat_graph(state, prompt_row: dict, policy_row: dict):
     """Rebuild the compiled graph from the current app.state engine pieces + the
     given prompt/policy. Kept identical to the lifespan wiring so a hot-reload
     produces the same graph a restart would."""
+    from app.cache.semantic import SemanticCache
     from app.graph.core import GraphDeps, build_graph
+    from app.insights.gap import GapDetector
     from app.trace import log_trace
 
     deps = GraphDeps(
@@ -47,6 +49,8 @@ def _build_chat_graph(state, prompt_row: dict, policy_row: dict):
         tools=state.tools,
         supabase=state.supabase,  # [TIP-008] handoff reads messages/trace
         phobert=state.phobert,  # [TIP-012a] None unless USE_PHOBERT=true
+        cache=SemanticCache(state.supabase),  # [TIP-015] semantic faq cache
+        gap=GapDetector(state.supabase),  # [TIP-015] knowledge-gap logging
     )
     return build_graph(deps)
 

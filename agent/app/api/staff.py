@@ -386,17 +386,25 @@ async def staff_metrics(request: Request):
     escalated_ids: set = set()
     cost_by_day: dict = {}
     total_cost = 0.0
+    # [TIP-015] cache stats: a faq turn is either a cache_hit OR a retrieval (miss).
+    cache_hits = 0
+    faq_misses = 0
+    faq_answer_cost = 0.0
+    faq_answer_count = 0
     for t in traces:
         cid = t["conversation_id"]
+        payload = t["payload"] or {}
         if t["cost_usd"] is not None:
             cost = float(t["cost_usd"])
             total_cost += cost
             day = (t["created_at"] or "")[:10]
             if day:
                 cost_by_day[day] = cost_by_day.get(day, 0.0) + cost
+            if t["step_type"] == "llm_call" and payload.get("purpose") == "faq_answer":
+                faq_answer_cost += cost
+                faq_answer_count += 1
         if t["latency_ms"] is not None:
             latency_by_conv[cid] = latency_by_conv.get(cid, 0) + int(t["latency_ms"])
-        payload = t["payload"] or {}
         if t["step_type"] == "router":
             intent = payload.get("intent")
             if intent:
@@ -406,6 +414,15 @@ async def staff_metrics(request: Request):
             reason = payload.get("reason")
             if reason:
                 reasons[reason] = reasons.get(reason, 0) + 1
+        elif t["step_type"] == "cache_hit":
+            cache_hits += 1
+        elif t["step_type"] == "retrieval":
+            faq_misses += 1
+
+    faq_turns = cache_hits + faq_misses
+    cache_hit_rate = (cache_hits / faq_turns) if faq_turns else None
+    avg_faq_cost = (faq_answer_cost / faq_answer_count) if faq_answer_count else 0.0
+    cache_savings_usd = round(cache_hits * avg_faq_cost, 6)
 
     escalated = len(escalated_ids & conv_ids) if conv_ids else 0
     latency_values = list(latency_by_conv.values())
@@ -418,7 +435,9 @@ async def staff_metrics(request: Request):
             "p50": _percentile(latency_values, 0.5),
             "p95": _percentile(latency_values, 0.95),
         },
-        "cache_hit_rate": None,  # TIP-015 supplies cache metrics
+        "cache_hit_rate": cache_hit_rate,  # [TIP-015] cache_hit / faq turns
+        "cache_savings_usd": cache_savings_usd,  # [TIP-015] hits × avg faq Sonnet cost
+        "faq_turns": faq_turns,
         "intent_distribution": [
             {"intent": k, "count": v}
             for k, v in sorted(intents.items(), key=lambda kv: -kv[1])
@@ -448,3 +467,15 @@ async def staff_eval_runs(request: Request, limit: int = 50):
         or []
     )
     return {"eval_runs": rows}
+
+
+@router.get("/knowledge-gaps", dependencies=[Depends(require_staff)])
+async def staff_knowledge_gaps(request: Request, limit: int = 200):
+    """[TIP-015] Cluster recent unanswerable faq turns (masked queries) so the
+    team can see which KB topics are missing. Greedy cosine clustering in-app."""
+    from app.insights.gap import GapDetector, greedy_cluster
+
+    detector = GapDetector(request.app.state.supabase)
+    events = detector.recent(limit)
+    clusters = greedy_cluster(events)
+    return {"clusters": clusters, "total_events": len(events)}
