@@ -1,73 +1,37 @@
-# React + TypeScript + Vite
+# XeCare Widget (TIP-014w)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Customer-facing chat widget for the XeCare agent — a friendly storefront (NOT the
+operator console). Phone gate → multi-turn chat with SSE streaming, citation
+chips, a confirm card for bookings/cancels, an emergency hotline banner, and
+human-takeover mode. Built on Vite + React + TS (no UI framework).
 
-Currently, two official plugins are available:
+## Run (dev)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Start the agent (port 8000) against a real Supabase, with `ANTHROPIC_API_KEY`
+   and `PHONE_HASH_SALT` set (and seed data for personalized greetings).
+2. `cp .env.example .env` and fill in (all optional for a basic run):
+   - `VITE_AGENT_PROXY_TARGET` — agent URL the Vite proxy forwards `/chat`
+     (incl. the SSE stream) to. Leave `VITE_AGENT_URL` empty in dev.
+   - `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` — enable human-mode Realtime
+     (staff messages + mode flips). Without them the widget polls
+     messages_public every 3s; agent-mode chat works without it.
+3. `npm install && npm run dev` → open the URL, enter a seeded phone (e.g.
+   `+84901000001`).
 
-## React Compiler
+## Scripts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `npm run dev` — Vite dev server (with `/chat` proxy + SSE).
+- `npm run build` — type-check (`tsc -b`) + production bundle.
+- `npm run lint` — ESLint.
 
-## Expanding the ESLint configuration
+## Security / privacy notes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `conversation_id` lives ONLY in React state — never localStorage/sessionStorage.
+  A refresh starts a fresh session (accepted for the demo).
+- Supabase is used with the **anon key only** (public) for human-mode reads; the
+  service role never reaches the browser. Sensitive flows go through the agent API.
+- Every message (incl. the agent's own reply) renders through `<PlainText>`
+  (HTML-escaped) — no `dangerouslySetInnerHTML`, no markdown renderer.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Visual VERIFY (4 reply types, responsive on a real phone) is scheduled for
+TIP-016 per the project plan; this TIP self-checks logic + build only.
