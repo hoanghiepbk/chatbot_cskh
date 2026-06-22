@@ -43,6 +43,8 @@ export type Metrics = {
   avg_cost_usd: number;
   latency_ms: { p50: number; p95: number };
   cache_hit_rate: number | null;
+  cache_savings_usd: number;
+  faq_turns: number;
   intent_distribution: { intent: string; count: number }[];
   escalation_reasons: { reason: string; count: number }[];
   cost_by_day: { date: string; cost_usd: number }[];
@@ -89,3 +91,12 @@ export type PublicMessage = {
   content_masked: string | null;
   created_at: string;
 };
+
+export type GapCluster = {
+  representative_query: string;
+  count: number;
+  last_seen: string;
+  sample_queries: string[];
+};
+
+export type KnowledgeGaps = { clusters: GapCluster[]; total_events: number };

@@ -1,4 +1,5 @@
 import {
+  BulbOutlined,
   CustomerServiceOutlined,
   DashboardOutlined,
   ExperimentOutlined,
@@ -31,6 +32,7 @@ import { ColorModeContextProvider } from "./contexts/color-mode";
 import { ConversationList } from "./pages/conversations/list";
 import { ConversationShow } from "./pages/conversations/show";
 import { EvalDashboard } from "./pages/evals";
+import { KnowledgeGapsPage } from "./pages/insights";
 import { HitlQueue } from "./pages/queue";
 import { OpsDashboard } from "./pages/ops";
 import { dataProvider } from "./providers/data";
@@ -99,6 +101,11 @@ function App() {
                   list: "/queue",
                   meta: { label: "HITL Queue", icon: <CustomerServiceOutlined /> },
                 },
+                {
+                  name: "insights",
+                  list: "/insights",
+                  meta: { label: "Knowledge Gaps", icon: <BulbOutlined /> },
+                },
               ]}
               options={{
                 syncWithLocation: true,
@@ -129,6 +136,7 @@ function App() {
                   <Route path="/ops" element={<OpsDashboard />} />
                   <Route path="/evals" element={<EvalDashboard />} />
                   <Route path="/queue" element={<HitlQueue />} />
+                  <Route path="/insights" element={<KnowledgeGapsPage />} />
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
 
