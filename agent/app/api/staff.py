@@ -36,6 +36,19 @@ def require_staff(authorization: str | None = Header(default=None)) -> None:
         raise HTTPException(status_code=401, detail="invalid staff token")
 
 
+def _percentile(values: list[float], p: float) -> float:
+    """Linear-interpolation percentile (p in [0,1]); 0 for empty input."""
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    k = (len(ordered) - 1) * p
+    floor = int(k)
+    ceil = min(floor + 1, len(ordered) - 1)
+    if floor == ceil:
+        return float(ordered[floor])
+    return float(ordered[floor] + (ordered[ceil] - ordered[floor]) * (k - floor))
+
+
 class StaffMessage(BaseModel):
     text: str
 
@@ -221,3 +234,217 @@ async def staff_reveal_contact(ticket_id: str, request: Request):
         "escalation", {"step": "pii_reveal", "ticket_id": ticket_id}
     )
     return {"placeholder": placeholder, "value": value}
+
+
+# ============ TIP-014: read endpoints for the staff console ============
+# Service-role reads, returning MASKED data only (display_name, content_masked,
+# trace payloads already masked upstream by trace.py). No raw phone anywhere —
+# the real number is reachable ONLY via reveal_contact (audited) above.
+
+
+@router.get("/conversations", dependencies=[Depends(require_staff)])
+async def staff_conversations(
+    request: Request,
+    mode: str | None = None,
+    escalated: bool | None = None,
+    limit: int = 50,
+):
+    """List conversations + last router intent + escalated flag + message count.
+    Powers the Trace Explorer table. `escalated` filters in-memory after the
+    limited page is built (demo-grade; fine for the data volumes here)."""
+    supabase = request.app.state.supabase
+    query = supabase.table("conversations").select(
+        "id, customer_id, mode, started_at, closed_at, resolution"
+    )
+    if mode in ("agent", "human"):
+        query = query.eq("mode", mode)
+    convs = query.order("started_at", desc=True).limit(limit).execute().data or []
+    ids = [c["id"] for c in convs]
+    if not ids:
+        return {"conversations": []}
+
+    names: dict = {}
+    cust_ids = [c["customer_id"] for c in convs if c["customer_id"]]
+    if cust_ids:
+        rows = (
+            supabase.table("customer_profiles")
+            .select("id, display_name")
+            .in_("id", cust_ids)
+            .execute()
+            .data
+            or []
+        )
+        names = {r["id"]: r["display_name"] for r in rows}
+
+    counts: dict = {}
+    msg_rows = (
+        supabase.table("messages").select("conversation_id").in_("conversation_id", ids).execute().data
+        or []
+    )
+    for m in msg_rows:
+        counts[m["conversation_id"]] = counts.get(m["conversation_id"], 0) + 1
+
+    last_intent: dict = {}
+    escalated_ids: set = set()
+    trace_rows = (
+        supabase.table("trace_events")
+        .select("conversation_id, step_type, payload, created_at")
+        .in_("conversation_id", ids)
+        .in_("step_type", ["router", "escalation"])
+        .order("created_at")
+        .execute()
+        .data
+        or []
+    )
+    for t in trace_rows:
+        cid = t["conversation_id"]
+        if t["step_type"] == "router":
+            intent = (t["payload"] or {}).get("intent")
+            if intent:
+                last_intent[cid] = intent  # ascending order → last write wins
+        elif t["step_type"] == "escalation":
+            escalated_ids.add(cid)
+
+    items = [
+        {
+            "id": c["id"],
+            "display_name": names.get(c["customer_id"]),
+            "mode": c["mode"],
+            "message_count": counts.get(c["id"], 0),
+            "last_intent": last_intent.get(c["id"]),
+            "escalated": c["id"] in escalated_ids,
+            "started_at": c["started_at"],
+            "closed_at": c["closed_at"],
+            "resolution": c["resolution"],
+        }
+        for c in convs
+    ]
+    if escalated is not None:
+        items = [it for it in items if it["escalated"] == escalated]
+    return {"conversations": items}
+
+
+@router.get("/conversations/{conversation_id}/trace", dependencies=[Depends(require_staff)])
+async def staff_conversation_trace(conversation_id: str, request: Request):
+    """All trace_events for one conversation (chronological) + a session summary.
+    Payloads are masked at write time (trace.py rejects raw PII)."""
+    supabase = request.app.state.supabase
+    rows = (
+        supabase.table("trace_events")
+        .select("*")
+        .eq("conversation_id", conversation_id)
+        .order("created_at")
+        .execute()
+        .data
+        or []
+    )
+    total_cost = sum(float(r["cost_usd"]) for r in rows if r["cost_usd"] is not None)
+    total_latency = sum(int(r["latency_ms"]) for r in rows if r["latency_ms"] is not None)
+    return {
+        "events": rows,
+        "summary": {
+            "event_count": len(rows),
+            "total_cost_usd": total_cost,
+            "total_latency_ms": total_latency,
+            "llm_calls": sum(1 for r in rows if r["step_type"] == "llm_call"),
+            "escalated": any(r["step_type"] == "escalation" for r in rows),
+        },
+    }
+
+
+@router.get("/metrics", dependencies=[Depends(require_staff)])
+async def staff_metrics(request: Request):
+    """Aggregate KPIs for the Ops Dashboard, computed in-memory over a recent
+    window (conversations + trace_events). Window sizes are returned so the UI
+    can show what was scanned — no silent truncation."""
+    supabase = request.app.state.supabase
+    convs = (
+        supabase.table("conversations")
+        .select("id, closed_at")
+        .order("started_at", desc=True)
+        .limit(2000)
+        .execute()
+        .data
+        or []
+    )
+    total = len(convs)
+    conv_ids = {c["id"] for c in convs}
+    resolved = sum(1 for c in convs if c["closed_at"])
+
+    traces = (
+        supabase.table("trace_events")
+        .select("conversation_id, step_type, payload, cost_usd, latency_ms, created_at")
+        .order("created_at", desc=True)
+        .limit(10000)
+        .execute()
+        .data
+        or []
+    )
+    latency_by_conv: dict = {}
+    intents: dict = {}
+    reasons: dict = {}
+    escalated_ids: set = set()
+    cost_by_day: dict = {}
+    total_cost = 0.0
+    for t in traces:
+        cid = t["conversation_id"]
+        if t["cost_usd"] is not None:
+            cost = float(t["cost_usd"])
+            total_cost += cost
+            day = (t["created_at"] or "")[:10]
+            if day:
+                cost_by_day[day] = cost_by_day.get(day, 0.0) + cost
+        if t["latency_ms"] is not None:
+            latency_by_conv[cid] = latency_by_conv.get(cid, 0) + int(t["latency_ms"])
+        payload = t["payload"] or {}
+        if t["step_type"] == "router":
+            intent = payload.get("intent")
+            if intent:
+                intents[intent] = intents.get(intent, 0) + 1
+        elif t["step_type"] == "escalation":
+            escalated_ids.add(cid)
+            reason = payload.get("reason")
+            if reason:
+                reasons[reason] = reasons.get(reason, 0) + 1
+
+    escalated = len(escalated_ids & conv_ids) if conv_ids else 0
+    latency_values = list(latency_by_conv.values())
+    return {
+        "totals": {"conversations": total, "resolved": resolved, "escalated": escalated},
+        "resolution_rate": (resolved / total) if total else 0.0,
+        "escalation_rate": (escalated / total) if total else 0.0,
+        "avg_cost_usd": (total_cost / total) if total else 0.0,
+        "latency_ms": {
+            "p50": _percentile(latency_values, 0.5),
+            "p95": _percentile(latency_values, 0.95),
+        },
+        "cache_hit_rate": None,  # TIP-015 supplies cache metrics
+        "intent_distribution": [
+            {"intent": k, "count": v}
+            for k, v in sorted(intents.items(), key=lambda kv: -kv[1])
+        ],
+        "escalation_reasons": [
+            {"reason": k, "count": v}
+            for k, v in sorted(reasons.items(), key=lambda kv: -kv[1])
+        ],
+        "cost_by_day": [
+            {"date": d, "cost_usd": round(v, 6)} for d, v in sorted(cost_by_day.items())[-7:]
+        ],
+        "window": {"conversations_scanned": total, "trace_events_scanned": len(traces)},
+    }
+
+
+@router.get("/eval-runs", dependencies=[Depends(require_staff)])
+async def staff_eval_runs(request: Request, limit: int = 50):
+    """Recent eval_runs for the Eval Dashboard (metrics jsonb returned as-is)."""
+    supabase = request.app.state.supabase
+    rows = (
+        supabase.table("eval_runs")
+        .select("*")
+        .order("created_at", desc=True)
+        .limit(limit)
+        .execute()
+        .data
+        or []
+    )
+    return {"eval_runs": rows}
