@@ -105,6 +105,7 @@ class AgentState(TypedDict, total=False):
     escalate_severity: str  # 'normal' | 'high' — drives ticket priority
     complaint_attempted: bool  # REQ-09: one self-serve attempt before escalating
     handback_note: str  # staff resolve summary, injected into the next agent turn
+    cache_write: dict  # [TIP-015] faq cache metadata passed faq → guardrail_out
 
 
 @dataclass
@@ -119,6 +120,8 @@ class GraphDeps:
     tools: Any = None  # ToolKit (TIP-006) — fakes/spies in tests
     supabase: Any = None  # service-role client (TIP-008) — handoff reads messages/trace
     phobert: Any = None  # PhoBERTGuard (TIP-012a) — None → Haiku router + regex injection
+    cache: Any = None  # SemanticCache (TIP-015) — None disables faq caching
+    gap: Any = None  # GapDetector (TIP-015) — None disables knowledge-gap logging
     extra: dict = field(default_factory=dict)
 
 
@@ -260,8 +263,55 @@ def build_graph(deps: GraphDeps):
                     {"intent": intent, "confidence": confidence, "engine": "haiku"})
         return {"intent": intent, "confidence": confidence, "router_failed": failed}
 
+    async def record_gap(state: AgentState, masked: str, reason: str, emb: list | None) -> None:
+        # [TIP-015] log an unanswerable faq turn (masked query) for the console.
+        if deps.gap is None:
+            return
+        from app.graph.retrieval import embed_dense
+
+        embedding = emb if emb is not None else embed_dense(masked)
+        deps.gap.record(masked, reason, embedding)
+
     async def faq(state: AgentState) -> dict:
-        chunks = await deps.search(state["masked_text"], top_k=5)
+        masked = state["masked_text"]
+        flags = state.get("guardrail_flags", {})
+
+        # [TIP-015] semantic cache — faq only, never on a PII turn. A hit skips
+        # retrieval + Sonnet + groundedness entirely.
+        cache_emb = None
+        cache_entities = None
+        cache_kb_version = None
+        if deps.cache is not None:
+            from app.cache.semantic import extract_entities, is_cacheable
+            from app.graph.retrieval import embed_dense
+
+            if is_cacheable(flags.get("pii_found")):
+                cache_entities = extract_entities(masked)
+                cache_emb = embed_dense(masked)
+                cache_kb_version = deps.cache.current_kb_version()
+                hit = deps.cache.lookup(cache_emb, cache_entities, cache_kb_version)
+                if hit:
+                    await trace(
+                        state,
+                        "cache_hit",
+                        {
+                            "similarity": round(hit["similarity"], 4),
+                            "cached_id": hit["id"],
+                            "entities": cache_entities,
+                        },
+                        latency_ms=hit["latency_ms"],
+                        cost_usd=0.0,
+                    )
+                    # already vetted when stored → 'template' skips the rubric LLM,
+                    # but apply_hard_rules still re-checks against the CURRENT policy.
+                    return {
+                        "reply": hit["reply"],
+                        "citations": hit["citations"],
+                        "retrieved_chunks": [],
+                        "reply_branch": "template",
+                    }
+
+        chunks = await deps.search(masked, top_k=5)
         await trace(
             state,
             "retrieval",
@@ -271,6 +321,7 @@ def build_graph(deps: GraphDeps):
             },
         )
         if not chunks:
+            await record_gap(state, masked, "no_chunks", cache_emb)
             return {
                 "reply": f"{REPLY_NOT_FOUND_PREFIX} vấn đề này. Anh/chị có thể gọi "
                 f"{HOTLINE} để được tư vấn trực tiếp ạ.",
@@ -319,6 +370,7 @@ def build_graph(deps: GraphDeps):
         supported = bool(verdict.get("supported")) if isinstance(verdict, dict) else False
 
         if not supported:
+            await record_gap(state, masked, "groundedness_false", cache_emb)
             return {
                 "reply": f"{REPLY_NOT_FOUND_PREFIX} câu hỏi này trong tài liệu của XeCare. "
                 f"Anh/chị gọi {HOTLINE} để được tư vấn chính xác nhé ạ.",
@@ -334,12 +386,21 @@ def build_graph(deps: GraphDeps):
             if key not in seen:
                 seen.add(key)
                 citations.append({"doc_id": c.doc_id, "heading": c.heading})
-        return {
+        updates: dict = {
             "reply": answer.text,
             "retrieved_chunks": [c.id for c in chunks],
             "citations": citations,
             "reply_branch": "faq",
         }
+        # [TIP-015] stash cache metadata; guardrail_out writes to the cache only if
+        # the reply PASSES (so a blocked/rewritten reply is never cached).
+        if cache_emb is not None:
+            updates["cache_write"] = {
+                "embedding": cache_emb,
+                "entities": cache_entities,
+                "kb_version": cache_kb_version,
+            }
+        return updates
 
     async def chitchat(state: AgentState) -> dict:
         history = state.get("messages", [])[-6:]
@@ -402,6 +463,17 @@ def build_graph(deps: GraphDeps):
             },
         )
         updates: dict = {"reply": result.final_text}
+        # [TIP-015] write to the faq cache ONLY when the reply passed clean (no
+        # rules hit / no rewrite). The faq node stashed embedding/entities/version.
+        cache_write = state.get("cache_write")
+        if cache_write and result.verdict == "pass" and deps.cache is not None:
+            deps.cache.store(
+                cache_write["embedding"],
+                cache_write["entities"],
+                cache_write["kb_version"],
+                result.final_text,
+                state.get("citations") or [],
+            )
         if result.fallback:
             # TIP-008: a blocked reply means the agent went off the rails → make a
             # real staff ticket (kept here rather than routed to the escalate node:

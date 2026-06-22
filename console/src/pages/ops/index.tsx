@@ -103,11 +103,13 @@ export function OpsDashboard() {
           <Card size="small">
             <Statistic
               title="Cache hit rate"
-              value="—"
-              valueStyle={{ ...MONO_STAT, color: SEMANTIC.muted }}
+              value={fmtPct(data?.cache_hit_rate)}
+              valueStyle={{ ...MONO_STAT, color: SEMANTIC.pass }}
             />
             <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-              TIP-015 cấp
+              {data
+                ? `Tiết kiệm ~${fmtUsd(data.cache_savings_usd)} · ${data.faq_turns} lượt faq`
+                : "TIP-015"}
             </Typography.Text>
           </Card>
         </Col>

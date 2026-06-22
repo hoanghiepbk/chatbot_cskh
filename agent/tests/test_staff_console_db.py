@@ -161,7 +161,8 @@ def test_metrics_shape_and_distributions(console):
         assert 0.0 <= m["escalation_rate"] <= 1.0
         assert m["avg_cost_usd"] >= 0.0
         assert m["latency_ms"]["p95"] >= m["latency_ms"]["p50"] >= 0
-        assert m["cache_hit_rate"] is None
+        # [TIP-015] cache_hit_rate is None when no faq turns, else within [0,1]
+        assert m["cache_hit_rate"] is None or 0.0 <= m["cache_hit_rate"] <= 1.0
         assert any(d["intent"] == "complaint" for d in m["intent_distribution"])
         assert any(r["reason"] == "complaint" for r in m["escalation_reasons"])
         assert isinstance(m["cost_by_day"], list)
